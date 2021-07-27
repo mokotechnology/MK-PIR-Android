@@ -3,12 +3,12 @@ package com.moko.support.task;
 import com.moko.ble.lib.task.OrderTask;
 import com.moko.support.entity.OrderCHAR;
 
-public class GetAdvTxPowerTask extends OrderTask {
+public class GetSerialIDTask extends OrderTask {
 
     public byte[] data;
 
-    public GetAdvTxPowerTask() {
-        super(OrderCHAR.CHAR_TX_POWER, OrderTask.RESPONSE_TYPE_READ);
+    public GetSerialIDTask() {
+        super(OrderCHAR.CHAR_SERIAL_ID, OrderTask.RESPONSE_TYPE_READ);
     }
 
     @Override

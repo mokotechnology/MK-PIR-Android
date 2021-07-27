@@ -8,8 +8,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.moko.pirsensor.R;
 import com.moko.ble.lib.utils.MokoUtils;
+import com.moko.pirsensor.R;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -33,6 +33,10 @@ public class DeviceFragment extends Fragment {
     TextView tvManufacturer;
     @BindView(R.id.tv_firmware_version)
     TextView tvFirmwareVersion;
+    @BindView(R.id.tv_running_time)
+    TextView tvRunningTime;
+    @BindView(R.id.tv_chip_model)
+    TextView tvChipModel;
 
 
     public DeviceFragment() {
@@ -111,7 +115,24 @@ public class DeviceFragment extends Fragment {
     }
 
     public void setBattery(byte[] value) {
-        String battery = Integer.parseInt(MokoUtils.bytesToHexString(value), 16) + "mV";
+        String battery = String.format("%dmV", MokoUtils.toInt(value));
         tvSoc.setText(battery);
+    }
+
+    public void setRunningTime(byte[] value) {
+        int seconds = MokoUtils.toInt(value);
+        int day = 0, hours = 0, minutes = 0;
+        day = seconds / (60 * 60 * 24);
+        seconds -= day * 60 * 60 * 24;
+        hours = seconds / (60 * 60);
+        seconds -= hours * 60 * 60;
+        minutes = seconds / 60;
+        seconds -= minutes * 60;
+        tvRunningTime.setText(String.format("%dD%dh%dm%ds", day, hours, minutes, seconds));
+    }
+
+    public void setChipModel(byte[] value) {
+        String chipModel = new String(value);
+        tvChipModel.setText(chipModel);
     }
 }

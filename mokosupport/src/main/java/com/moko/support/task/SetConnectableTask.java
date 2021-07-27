@@ -8,7 +8,7 @@ public class SetConnectableTask extends OrderTask {
     public byte[] data;
 
     public SetConnectableTask() {
-        super(OrderCHAR.CHAR_CONNECTABLE, OrderTask.RESPONSE_TYPE_WRITE);
+        super(OrderCHAR.CHAR_CONNECTION, OrderTask.RESPONSE_TYPE_WRITE);
     }
 
     @Override

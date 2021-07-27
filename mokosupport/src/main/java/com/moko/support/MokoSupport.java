@@ -121,8 +121,6 @@ public class MokoSupport extends MokoBleLib {
     public boolean orderResponseValid(BluetoothGattCharacteristic characteristic, OrderTask orderTask) {
         final UUID responseUUID = characteristic.getUuid();
         final OrderCHAR orderCHAR = (OrderCHAR) orderTask.orderCHAR;
-        if (responseUUID.equals(OrderCHAR.CHAR_LOCKED_NOTIFY.getUuid()))
-            return true;
         return responseUUID.equals(orderCHAR.getUuid());
     }
 
@@ -131,24 +129,11 @@ public class MokoSupport extends MokoBleLib {
     public boolean orderNotify(BluetoothGattCharacteristic characteristic, byte[] value) {
         final UUID responseUUID = characteristic.getUuid();
         OrderCHAR orderCHAR = null;
-        if (responseUUID.equals(OrderCHAR.CHAR_LOCKED_NOTIFY.getUuid())) {
-            orderCHAR = OrderCHAR.CHAR_LOCKED_NOTIFY;
-            int key = value[1] & 0xff;
-            if (key != 0x63) {
-                return false;
-            }
+        if (responseUUID.equals(OrderCHAR.CHAR_PASSWORD.getUuid())) {
+           return false;
         }
-        if (responseUUID.equals(OrderCHAR.CHAR_TH_NOTIFY.getUuid())) {
-            orderCHAR = OrderCHAR.CHAR_TH_NOTIFY;
-        }
-        if (responseUUID.equals(OrderCHAR.CHAR_STORE_NOTIFY.getUuid())) {
-            orderCHAR = OrderCHAR.CHAR_STORE_NOTIFY;
-        }
-        if (responseUUID.equals(OrderCHAR.CHAR_THREE_AXIS_NOTIFY.getUuid())) {
-            orderCHAR = OrderCHAR.CHAR_THREE_AXIS_NOTIFY;
-        }
-        if (responseUUID.equals(OrderCHAR.CHAR_DISCONNECT.getUuid())) {
-            orderCHAR = OrderCHAR.CHAR_DISCONNECT;
+        if (responseUUID.equals(OrderCHAR.CHAR_HALL_STATUS.getUuid())) {
+            orderCHAR = OrderCHAR.CHAR_HALL_STATUS;
         }
         if (orderCHAR == null)
             return false;
@@ -163,35 +148,14 @@ public class MokoSupport extends MokoBleLib {
         return true;
     }
 
-    public void enableTHNotify() {
+    public void enableDoorStateNotify() {
         if (mBleConfig != null)
-            mBleConfig.enableTHNotify();
+            mBleConfig.enableDoorStateNotify();
     }
 
-    public void disableTHNotify() {
+    public void disableDoorStateNotify() {
         if (mBleConfig != null)
-            mBleConfig.disableTHNotify();
+            mBleConfig.disableDoorStateNotify();
     }
 
-    public void enableStoreNotify() {
-        if (mBleConfig != null)
-            mBleConfig.enableStoreNotify();
-    }
-
-    public void disableStoreNotify() {
-        if (mBleConfig != null)
-            mBleConfig.disableStoreNotify();
-    }
-
-    public void enableThreeAxisNotify() {
-        if (mBleConfig != null)
-            mBleConfig.enableThreeAxisNotify();
-    }
-
-    public void disableThreeAxisNotify() {
-        if (mBleConfig != null)
-            mBleConfig.disableThreeAxisNotify();
-    }
-
-    public static boolean isNewVersion = false;
 }

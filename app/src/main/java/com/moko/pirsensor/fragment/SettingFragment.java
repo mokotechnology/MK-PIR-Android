@@ -1,25 +1,18 @@
 package com.moko.pirsensor.fragment;
 
 import android.app.Fragment;
-import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
 
 import com.moko.pirsensor.R;
-import com.moko.pirsensor.activity.AxisDataActivity;
 import com.moko.pirsensor.activity.DeviceInfoActivity;
-import com.moko.pirsensor.activity.THDataActivity;
 import com.moko.pirsensor.dialog.AlertMessageDialog;
 import com.moko.pirsensor.dialog.ModifyPasswordDialog;
 import com.moko.ble.lib.utils.MokoUtils;
-
-import java.util.Timer;
-import java.util.TimerTask;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -34,16 +27,6 @@ public class SettingFragment extends Fragment {
     ImageView ivPower;
     @BindView(R.id.iv_button_power)
     ImageView ivButtonPower;
-    @BindView(R.id.rl_password)
-    RelativeLayout rlPassword;
-    @BindView(R.id.iv_password_verify)
-    ImageView ivPasswordVerify;
-    @BindView(R.id.rl_axis)
-    RelativeLayout rlAxis;
-    @BindView(R.id.rl_th)
-    RelativeLayout rlTh;
-    @BindView(R.id.rl_reset_facotry)
-    RelativeLayout rlResetFacotry;
 
     private DeviceInfoActivity activity;
 
@@ -89,37 +72,24 @@ public class SettingFragment extends Fragment {
         super.onDestroy();
     }
 
-    @OnClick({R.id.rl_password, R.id.rl_update_firmware, R.id.rl_reset_facotry, R.id.iv_connectable,
-            R.id.iv_power, R.id.iv_button_power, R.id.iv_password_verify, R.id.rl_axis, R.id.rl_th})
+    @OnClick({R.id.rl_pir_hall, R.id.rl_update_firmware, R.id.rl_reset_factory, R.id.iv_connectable,
+            R.id.iv_power, R.id.iv_button_power, R.id.rl_modify_password})
     public void onViewClicked(View view) {
         switch (view.getId()) {
-            case R.id.rl_password:
-                final ModifyPasswordDialog modifyPasswordDialog = new ModifyPasswordDialog(activity);
+            case R.id.rl_modify_password:
+                final ModifyPasswordDialog modifyPasswordDialog = new ModifyPasswordDialog();
                 modifyPasswordDialog.setOnModifyPasswordClicked(new ModifyPasswordDialog.ModifyPasswordClickListener() {
                     @Override
                     public void onEnsureClicked(String password) {
                         activity.modifyPassword(password);
                     }
                 });
-                modifyPasswordDialog.show();
-                Timer modifyTimer = new Timer();
-                modifyTimer.schedule(new TimerTask() {
-
-                    @Override
-                    public void run() {
-                        activity.runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                modifyPasswordDialog.showKeyboard();
-                            }
-                        });
-                    }
-                }, 200);
+                modifyPasswordDialog.show(activity.getSupportFragmentManager());
                 break;
             case R.id.rl_update_firmware:
                 activity.chooseFirmwareFile();
                 break;
-            case R.id.rl_reset_facotry:
+            case R.id.rl_reset_factory:
                 final AlertMessageDialog resetDeviceDialog = new AlertMessageDialog();
                 resetDeviceDialog.setMessage("Are you sure to reset the device？");
                 resetDeviceDialog.setConfirm(R.string.ok);
@@ -172,26 +142,8 @@ public class SettingFragment extends Fragment {
                     activity.setButtonPower(true);
                 }
                 break;
-            case R.id.iv_password_verify:
-                if (passwordVerify) {
-                    final AlertMessageDialog directAlertDialog = new AlertMessageDialog();
-                    directAlertDialog.setMessage("Are you sure to disable password verification？");
-                    directAlertDialog.setConfirm(R.string.ok);
-                    directAlertDialog.setOnAlertConfirmListener(() -> {
-                        activity.setDirectedConnectable(true);
-                    });
-                    directAlertDialog.show(activity.getSupportFragmentManager());
-                } else {
-                    activity.setDirectedConnectable(false);
-                }
-                break;
-            case R.id.rl_axis:
-                // 3轴配置
-                startActivity(new Intent(getActivity(), AxisDataActivity.class));
-                break;
-            case R.id.rl_th:
-                // 温湿度
-                startActivity(new Intent(getActivity(), THDataActivity.class));
+            case R.id.rl_pir_hall:
+                activity.onPIRHallSetting();
                 break;
         }
     }
@@ -199,9 +151,9 @@ public class SettingFragment extends Fragment {
     boolean isConneacted;
 
     public void setConnectable(byte[] value) {
-        int connectable = Integer.parseInt(MokoUtils.byte2HexString(value[0]), 16);
-        isConneacted = connectable == 1;
-        if (connectable == 1) {
+        int connectable = MokoUtils.toInt(value);
+        isConneacted = connectable == 0;
+        if (isConneacted) {
             ivConnectable.setImageResource(R.drawable.connectable_checked);
         } else {
             ivConnectable.setImageResource(R.drawable.connectable_unchecked);
@@ -212,43 +164,10 @@ public class SettingFragment extends Fragment {
         ivPower.setImageResource(R.drawable.connectable_unchecked);
     }
 
-    private boolean passwordVerify;
-
-    public void setPasswordVerify(boolean passwordVerify) {
-        this.passwordVerify = passwordVerify;
-        ivPasswordVerify.setImageResource(passwordVerify ? R.drawable.connectable_checked : R.drawable.connectable_unchecked);
-    }
-
     private boolean enableButtonPower;
 
     public void setButtonPower(boolean enable) {
         this.enableButtonPower = enable;
         ivButtonPower.setImageResource(enable ? R.drawable.connectable_checked : R.drawable.connectable_unchecked);
-    }
-
-    public void setModifyPasswordVisiable(boolean isSupportModifyPassword) {
-        rlPassword.setVisibility(isSupportModifyPassword ? View.VISIBLE : View.GONE);
-        rlResetFacotry.setVisibility(passwordVerify ? View.VISIBLE : View.GONE);
-    }
-
-    public void setDeviceType(int deviceType) {
-        switch (deviceType) {
-            case 0:
-                rlAxis.setVisibility(View.GONE);
-                rlTh.setVisibility(View.GONE);
-                break;
-            case 1:
-                rlAxis.setVisibility(View.VISIBLE);
-                rlTh.setVisibility(View.GONE);
-                break;
-            case 2:
-                rlAxis.setVisibility(View.GONE);
-                rlTh.setVisibility(View.VISIBLE);
-                break;
-            case 3:
-                rlAxis.setVisibility(View.VISIBLE);
-                rlTh.setVisibility(View.VISIBLE);
-                break;
-        }
     }
 }

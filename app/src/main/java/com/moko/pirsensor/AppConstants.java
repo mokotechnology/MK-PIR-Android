@@ -9,7 +9,7 @@ public class AppConstants {
     public static final String PATTERN_YYYY_MM_DD_HH_MM = "yyyy-MM-dd HH:mm";
     public static final String PATTERN_YYYY_MM_DD_HH_MM_SS = "yyyy/MM/dd HH:mm:ss";
     // sp
-    public static final String SP_NAME = "sp_name_beaconx_pro";
+    public static final String SP_NAME = "sp_name_pir";
 
     public static final String SP_KEY_DEVICE_ADDRESS = "sp_key_device_address";
     // extra_key

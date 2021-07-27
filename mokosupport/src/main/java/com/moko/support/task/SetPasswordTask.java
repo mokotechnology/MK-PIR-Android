@@ -3,13 +3,12 @@ package com.moko.support.task;
 import com.moko.ble.lib.task.OrderTask;
 import com.moko.support.entity.OrderCHAR;
 
-
-public class ResetDeviceTask extends OrderTask {
+public class SetPasswordTask extends OrderTask {
 
     public byte[] data;
 
-    public ResetDeviceTask() {
-        super(OrderCHAR.CHAR_RESET, OrderTask.RESPONSE_TYPE_WRITE);
+    public SetPasswordTask() {
+        super(OrderCHAR.CHAR_PASSWORD, OrderTask.RESPONSE_TYPE_WRITE_NO_RESPONSE);
     }
 
     @Override

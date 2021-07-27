@@ -5,6 +5,7 @@ import android.text.Editable;
 import android.text.InputFilter;
 import android.text.Spanned;
 import android.text.TextWatcher;
+import android.view.Gravity;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
@@ -14,11 +15,13 @@ import com.moko.pirsensor.R;
 import com.moko.pirsensor.utils.ToastUtils;
 
 import butterknife.BindView;
+import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-public class ModifyPasswordDialog extends BaseDialog {
+public class ModifyPasswordDialog extends MokoBaseDialog {
+    public static final String TAG = ModifyPasswordDialog.class.getSimpleName();
 
-    private final String FILTER_ASCII = "\\A\\p{ASCII}*\\z";
+    private final String FILTER_ASCII = "[^ -~]";
 
     @BindView(R.id.et_new_password)
     EditText etNewPassword;
@@ -29,30 +32,26 @@ public class ModifyPasswordDialog extends BaseDialog {
     private boolean passwordEnable;
     private boolean confirmPasswordEnable;
 
-
-    public ModifyPasswordDialog(Context context) {
-        super(context);
-    }
-
     @Override
-    protected int getLayoutResId() {
+    public int getLayoutRes() {
         return R.layout.dialog_change_password;
     }
 
     @Override
-    protected void renderConvertView(View convertView, Object o) {
+    public void bindView(View v) {
+        ButterKnife.bind(this, v);
         InputFilter filter = new InputFilter() {
             @Override
             public CharSequence filter(CharSequence source, int start, int end, Spanned dest, int dstart, int dend) {
-                if (!(source + "").matches(FILTER_ASCII)) {
+                if ((source + "").matches(FILTER_ASCII)) {
                     return "";
                 }
 
                 return null;
             }
         };
-        etNewPassword.setFilters(new InputFilter[]{new InputFilter.LengthFilter(16), filter});
-        etNewPasswordRe.setFilters(new InputFilter[]{new InputFilter.LengthFilter(16), filter});
+        etNewPassword.setFilters(new InputFilter[]{new InputFilter.LengthFilter(8), filter});
+        etNewPasswordRe.setFilters(new InputFilter[]{new InputFilter.LengthFilter(8), filter});
         etNewPassword.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -87,6 +86,21 @@ public class ModifyPasswordDialog extends BaseDialog {
 
             }
         });
+
+        etNewPassword.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                //设置可获得焦点
+                etNewPassword.setFocusable(true);
+                etNewPassword.setFocusableInTouchMode(true);
+                //请求获得焦点
+                etNewPassword.requestFocus();
+                //调用系统输入法
+                InputMethodManager inputManager = (InputMethodManager) etNewPassword
+                        .getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+                inputManager.showSoftInput(etNewPassword, 0);
+            }
+        },200);
     }
 
     @OnClick({R.id.tv_cancel, R.id.tv_password_ensure})
@@ -109,6 +123,36 @@ public class ModifyPasswordDialog extends BaseDialog {
         }
     }
 
+    @Override
+    public int getDialogStyle() {
+        return R.style.CenterDialog;
+    }
+
+    @Override
+    public int getGravity() {
+        return Gravity.CENTER;
+    }
+
+    @Override
+    public String getFragmentTag() {
+        return TAG;
+    }
+
+    @Override
+    public float getDimAmount() {
+        return 0.7f;
+    }
+
+    @Override
+    public boolean getCancelOutside() {
+        return false;
+    }
+
+    @Override
+    public boolean getCancellable() {
+        return true;
+    }
+
     private ModifyPasswordClickListener modifyPasswordClickListener;
 
     public void setOnModifyPasswordClicked(ModifyPasswordClickListener modifyPasswordClickListener) {
@@ -118,19 +162,5 @@ public class ModifyPasswordDialog extends BaseDialog {
     public interface ModifyPasswordClickListener {
 
         void onEnsureClicked(String password);
-    }
-
-    public void showKeyboard() {
-        if (etNewPassword != null) {
-            //设置可获得焦点
-            etNewPassword.setFocusable(true);
-            etNewPassword.setFocusableInTouchMode(true);
-            //请求获得焦点
-            etNewPassword.requestFocus();
-            //调用系统输入法
-            InputMethodManager inputManager = (InputMethodManager) etNewPassword
-                    .getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-            inputManager.showSoftInput(etNewPassword, 0);
-        }
     }
 }

@@ -4,14 +4,13 @@ import android.Manifest;
 import android.bluetooth.BluetoothDevice;
 import android.content.Context;
 import android.content.pm.PackageManager;
-import android.text.TextUtils;
 
 import com.elvishew.xlog.XLog;
 import com.moko.ble.lib.utils.MokoUtils;
 import com.moko.support.callback.MokoScanDeviceCallback;
 import com.moko.support.entity.DeviceInfo;
 
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.List;
 
 import androidx.core.content.ContextCompat;
@@ -41,11 +40,11 @@ public final class MokoBleScanner {
         ScanSettings settings = new ScanSettings.Builder()
                 .setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY)
                 .build();
-//        List<ScanFilter> scanFilterList = new ArrayList<>();
-//        ScanFilter.Builder builder = new ScanFilter.Builder();
-//        builder.setServiceData(new ParcelUuid(OrderServices.SERVICE_ADV.getUuid()), null);
-//        scanFilterList.add(builder.build());
-        List<ScanFilter> scanFilterList = Collections.singletonList(new ScanFilter.Builder().build());
+        List<ScanFilter> scanFilterList = new ArrayList<>();
+        ScanFilter.Builder builder = new ScanFilter.Builder();
+        builder.setManufacturerData(0x620A, null);
+        scanFilterList.add(builder.build());
+//        List<ScanFilter> scanFilterList = Collections.singletonList(new ScanFilter.Builder().build());
         mMokoLeScanHandler = new MokoLeScanHandler(callback);
         scanner.startScan(scanFilterList, settings, mMokoLeScanHandler);
         callback.onStartScan();

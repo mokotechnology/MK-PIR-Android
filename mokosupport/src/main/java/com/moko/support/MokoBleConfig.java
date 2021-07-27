@@ -20,11 +20,9 @@ import androidx.annotation.NonNull;
 final class MokoBleConfig extends MokoBleManager {
 
     private MokoResponseCallback mMokoResponseCallback;
-    private BluetoothGattCharacteristic thCharacteristic;
-    private BluetoothGattCharacteristic lockedCharacteristic;
-    private BluetoothGattCharacteristic threeAxisCharacteristic;
-    private BluetoothGattCharacteristic storeCharacteristic;
-    private BluetoothGattCharacteristic disconnectCharacteristic;
+    private BluetoothGattCharacteristic doorStateCharacteristic;
+    private BluetoothGattCharacteristic paramsCharacteristic;
+    private BluetoothGattCharacteristic passwordCharacteristic;
 
     public MokoBleConfig(@NonNull Context context, MokoResponseCallback callback) {
         super(context);
@@ -35,13 +33,11 @@ final class MokoBleConfig extends MokoBleManager {
     public boolean init(BluetoothGatt gatt) {
         final BluetoothGattService service = gatt.getService(OrderServices.SERVICE_CUSTOM.getUuid());
         if (service != null) {
-            thCharacteristic = service.getCharacteristic(OrderCHAR.CHAR_TH_NOTIFY.getUuid());
-            lockedCharacteristic = service.getCharacteristic(OrderCHAR.CHAR_LOCKED_NOTIFY.getUuid());
-            threeAxisCharacteristic = service.getCharacteristic(OrderCHAR.CHAR_THREE_AXIS_NOTIFY.getUuid());
-            storeCharacteristic = service.getCharacteristic(OrderCHAR.CHAR_STORE_NOTIFY.getUuid());
-            disconnectCharacteristic = service.getCharacteristic(OrderCHAR.CHAR_DISCONNECT.getUuid());
-            enableDisconnectNotify();
-            enableLockedNotify();
+            doorStateCharacteristic = service.getCharacteristic(OrderCHAR.CHAR_HALL_STATUS.getUuid());
+            passwordCharacteristic = service.getCharacteristic(OrderCHAR.CHAR_PASSWORD.getUuid());
+            paramsCharacteristic = service.getCharacteristic(OrderCHAR.CHAR_PARAMS.getUuid());
+            enablePasswordNotify();
+            enableParamsNotify();
             return true;
         }
         return false;
@@ -60,7 +56,7 @@ final class MokoBleConfig extends MokoBleManager {
     @Override
     public void discovered(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic) {
         UUID lastCharacteristicUUID = characteristic.getUuid();
-        if (lockedCharacteristic.getUuid().equals(lastCharacteristicUUID))
+        if (paramsCharacteristic.getUuid().equals(lastCharacteristicUUID))
             mMokoResponseCallback.onServicesDiscovered(gatt);
     }
 
@@ -94,74 +90,45 @@ final class MokoBleConfig extends MokoBleManager {
         mMokoResponseCallback.onDeviceDisconnected(device, reason);
     }
 
-    public void enableTHNotify() {
-        setIndicationCallback(thCharacteristic).with((device, data) -> {
+    public void enableDoorStateNotify() {
+        setIndicationCallback(doorStateCharacteristic).with((device, data) -> {
             final byte[] value = data.getValue();
             XLog.e("onDataReceived");
             XLog.e("device to app : " + MokoUtils.bytesToHexString(value));
-            mMokoResponseCallback.onCharacteristicChanged(thCharacteristic, value);
+            mMokoResponseCallback.onCharacteristicChanged(doorStateCharacteristic, value);
         });
-        enableNotifications(thCharacteristic).enqueue();
+        enableNotifications(doorStateCharacteristic).enqueue();
     }
 
-    public void disableTHNotify() {
-        disableNotifications(thCharacteristic).enqueue();
+    public void disableDoorStateNotify() {
+        disableNotifications(doorStateCharacteristic).enqueue();
     }
 
-    public void enableStoreNotify() {
-        setIndicationCallback(storeCharacteristic).with((device, data) -> {
+    public void enableParamsNotify() {
+        setIndicationCallback(paramsCharacteristic).with((device, data) -> {
             final byte[] value = data.getValue();
             XLog.e("onDataReceived");
             XLog.e("device to app : " + MokoUtils.bytesToHexString(value));
-            mMokoResponseCallback.onCharacteristicChanged(storeCharacteristic, value);
+            mMokoResponseCallback.onCharacteristicChanged(paramsCharacteristic, value);
         });
-        enableNotifications(storeCharacteristic).enqueue();
+        enableNotifications(paramsCharacteristic).enqueue();
     }
 
-    public void disableStoreNotify() {
-        disableNotifications(storeCharacteristic).enqueue();
+    public void disableParamsNotify() {
+        disableNotifications(paramsCharacteristic).enqueue();
     }
 
-    public void enableThreeAxisNotify() {
-        setIndicationCallback(threeAxisCharacteristic).with((device, data) -> {
+    public void enablePasswordNotify() {
+        setIndicationCallback(passwordCharacteristic).with((device, data) -> {
             final byte[] value = data.getValue();
             XLog.e("onDataReceived");
             XLog.e("device to app : " + MokoUtils.bytesToHexString(value));
-            mMokoResponseCallback.onCharacteristicChanged(threeAxisCharacteristic, value);
+            mMokoResponseCallback.onCharacteristicChanged(passwordCharacteristic, value);
         });
-        enableNotifications(threeAxisCharacteristic).enqueue();
+        enableNotifications(passwordCharacteristic).enqueue();
     }
 
-    public void disableThreeAxisNotify() {
-        disableNotifications(threeAxisCharacteristic).enqueue();
-    }
-
-
-    public void enableLockedNotify() {
-        setIndicationCallback(lockedCharacteristic).with((device, data) -> {
-            final byte[] value = data.getValue();
-            XLog.e("onDataReceived");
-            XLog.e("device to app : " + MokoUtils.bytesToHexString(value));
-            mMokoResponseCallback.onCharacteristicChanged(lockedCharacteristic, value);
-        });
-        enableNotifications(lockedCharacteristic).enqueue();
-    }
-
-    public void disableLockedNotify() {
-        disableNotifications(lockedCharacteristic).enqueue();
-    }
-
-    public void enableDisconnectNotify() {
-        setIndicationCallback(disconnectCharacteristic).with((device, data) -> {
-            final byte[] value = data.getValue();
-            XLog.e("onDataReceived");
-            XLog.e("device to app : " + MokoUtils.bytesToHexString(value));
-            mMokoResponseCallback.onCharacteristicChanged(disconnectCharacteristic, value);
-        });
-        enableNotifications(disconnectCharacteristic).enqueue();
-    }
-
-    public void disableDisconnectNotify() {
-        disableNotifications(disconnectCharacteristic).enqueue();
+    public void disablePasswordNotify() {
+        disableNotifications(passwordCharacteristic).enqueue();
     }
 }
