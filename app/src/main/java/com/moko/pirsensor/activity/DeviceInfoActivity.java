@@ -31,7 +31,6 @@ import com.moko.pirsensor.AppConstants;
 import com.moko.pirsensor.R;
 import com.moko.pirsensor.dialog.AlertMessageDialog;
 import com.moko.pirsensor.dialog.LoadingMessageDialog;
-import com.moko.pirsensor.entity.ValidParams;
 import com.moko.pirsensor.fragment.AdvFragment;
 import com.moko.pirsensor.fragment.DeviceFragment;
 import com.moko.pirsensor.fragment.SettingFragment;
