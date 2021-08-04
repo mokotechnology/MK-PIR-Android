@@ -18,7 +18,6 @@ import com.moko.support.task.GetSerialIDTask;
 import com.moko.support.task.GetSerialNumberTask;
 import com.moko.support.task.GetSoftwareRevisionTask;
 import com.moko.support.task.ParamsTask;
-import com.moko.support.task.ResetDeviceTask;
 import com.moko.support.task.SetAdvIntervalTask;
 import com.moko.support.task.SetAdvNameTask;
 import com.moko.support.task.SetAdvTxPowerTask;
@@ -27,6 +26,7 @@ import com.moko.support.task.SetMajorTask;
 import com.moko.support.task.SetMinorTask;
 import com.moko.support.task.SetPasswordTask;
 import com.moko.support.task.SetRSSITask;
+import com.moko.support.task.SetResetTask;
 import com.moko.support.task.SetSerialIDTask;
 
 import androidx.annotation.IntRange;
@@ -117,7 +117,7 @@ public class OrderTaskAssembler {
     /**
      * @Description 设置Major
      */
-    public static OrderTask setMajor(@IntRange(from = 0, to = 65535)int major) {
+    public static OrderTask setMajor(@IntRange(from = 0, to = 65535) int major) {
         SetMajorTask task = new SetMajorTask();
         task.setData(major);
         return task;
@@ -134,7 +134,7 @@ public class OrderTaskAssembler {
     /**
      * @Description 设置Minor
      */
-    public static OrderTask setMinor(@IntRange(from = 0, to = 65535)int minor) {
+    public static OrderTask setMinor(@IntRange(from = 0, to = 65535) int minor) {
         SetMinorTask task = new SetMinorTask();
         task.setData(minor);
         return task;
@@ -331,7 +331,7 @@ public class OrderTaskAssembler {
      */
     public static OrderTask setClose() {
         ParamsTask task = new ParamsTask();
-        task.setData(ParamsKeyEnum.SET_CLOSE);
+        task.setClose();
         return task;
     }
 
@@ -348,7 +348,7 @@ public class OrderTaskAssembler {
      * @Description 恢复出厂设置
      */
     public static OrderTask resetDevice(String password) {
-        ResetDeviceTask task = new ResetDeviceTask();
+        SetResetTask task = new SetResetTask();
         task.setData(password.getBytes());
         return task;
     }

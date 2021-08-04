@@ -218,6 +218,11 @@ public class DeviceInfoActivity extends BaseActivity implements RadioGroup.OnChe
                             ToastUtils.showToast(DeviceInfoActivity.this, "Success!");
                         }
                         break;
+                    case CHAR_RESET:
+                        if (responseType == OrderTask.RESPONSE_TYPE_WRITE) {
+                            ToastUtils.showToast(DeviceInfoActivity.this, "Success!");
+                        }
+                        break;
                     case CHAR_PARAMS:
                         if (value.length >= 2) {
                             int key = value[1] & 0xff;
@@ -253,6 +258,11 @@ public class DeviceInfoActivity extends BaseActivity implements RadioGroup.OnChe
                                     if (length >= 1) {
                                         boolean enable = value[4] == 1;
                                         settingFragment.setButtonPower(enable);
+                                    }
+                                    break;
+                                case SET_BUTTON_POWER:
+                                    if (length == 1 && (0xAA == (value[4] & 0xFF))) {
+                                        ToastUtils.showToast(DeviceInfoActivity.this, "Success!");
                                     }
                                     break;
                                 case GET_CHIP_MODEL:

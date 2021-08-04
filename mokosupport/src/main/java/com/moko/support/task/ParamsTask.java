@@ -31,6 +31,7 @@ public class ParamsTask extends OrderTask {
             case GET_PIR_SENSITIVITY:
             case GET_PIR_DELAY:
             case GET_TIME:
+            case SET_CLOSE:
                 createGetConfigData(key.getParamsKey());
                 break;
         }
@@ -45,6 +46,7 @@ public class ParamsTask extends OrderTask {
                 (byte) 0xEA,
                 (byte) ParamsKeyEnum.SET_CLOSE.getParamsKey(),
                 (byte) 0x00,
+                (byte) 0x01,
                 (byte) 0x00
         };
     }

@@ -10,10 +10,10 @@ import com.moko.ble.lib.event.ConnectStatusEvent;
 import com.moko.ble.lib.event.OrderTaskResponseEvent;
 import com.moko.ble.lib.task.OrderTask;
 import com.moko.ble.lib.task.OrderTaskResponse;
-import com.moko.ble.lib.utils.MokoUtils;
 import com.moko.pirsensor.AppConstants;
 import com.moko.pirsensor.R;
 import com.moko.pirsensor.dialog.LoadingMessageDialog;
+import com.moko.pirsensor.utils.ToastUtils;
 import com.moko.support.MokoSupport;
 import com.moko.support.OrderTaskAssembler;
 import com.moko.support.entity.OrderCHAR;
@@ -125,9 +125,14 @@ public class PIRHallSettingActivity extends BaseActivity {
                                     }
                                     break;
                                 case GET_PIR_DELAY:
-                                    if (length > 0) {
-                                        int delay = value[4] & 0xFF;
-                                        npvPirDelay.setValue(delay);
+                                    if (responseType == OrderTask.RESPONSE_TYPE_WRITE) {
+                                        if (length > 0) {
+                                            int delay = value[4] & 0xFF;
+                                            npvPirDelay.setValue(delay);
+                                        }
+                                    }
+                                    if (responseType == OrderTask.RESPONSE_TYPE_WRITE) {
+                                        ToastUtils.showToast(PIRHallSettingActivity.this, "Success!");
                                     }
                                     break;
                                 case GET_TIME:
