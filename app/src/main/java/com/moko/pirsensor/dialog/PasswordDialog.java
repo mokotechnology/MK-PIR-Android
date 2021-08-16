@@ -75,8 +75,13 @@ public class PasswordDialog extends MokoBaseDialog {
                 break;
             case R.id.tv_password_ensure:
                 dismiss();
-                if (TextUtils.isEmpty(etPassword.getText().toString())) {
+                String password = etPassword.getText().toString();
+                if (TextUtils.isEmpty(password)) {
                     ToastUtils.showToast(getContext(), getContext().getString(R.string.password_null));
+                    return;
+                }
+                if (password.length() != 8) {
+                    ToastUtils.showToast(getContext(), "Password must be 8 characters.");
                     return;
                 }
                 if (passwordClickListener != null)

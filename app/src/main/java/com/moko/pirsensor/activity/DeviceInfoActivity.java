@@ -82,6 +82,8 @@ public class DeviceInfoActivity extends BaseActivity implements RadioGroup.OnChe
     public String mDeviceMac;
     public String mDeviceName;
     private boolean mIsClose;
+    private boolean mIsReset;
+    private boolean mIsModifyPassword;
     private boolean mReceiverTag = false;
 
     @Override
@@ -114,7 +116,7 @@ public class DeviceInfoActivity extends BaseActivity implements RadioGroup.OnChe
         runOnUiThread(() -> {
             if (MokoConstants.ACTION_DISCONNECTED.equals(action)) {
                 // 设备断开，通知页面更新
-                if (mIsClose)
+                if (mIsClose || mIsReset || mIsModifyPassword)
                     return;
                 if (MokoSupport.getInstance().isBluetoothOpen()) {
                     if (isUpgrading) {
@@ -215,12 +217,28 @@ public class DeviceInfoActivity extends BaseActivity implements RadioGroup.OnChe
                         break;
                     case CHAR_PASSWORD:
                         if (2 == (MokoUtils.toInt(value))) {
-                            ToastUtils.showToast(DeviceInfoActivity.this, "Success!");
+                            mIsModifyPassword = true;
+                            AlertMessageDialog dialog = new AlertMessageDialog();
+                            dialog.setMessage("Modify password success!\nPlease reconnect the Device.");
+                            dialog.setConfirm(R.string.ok);
+                            dialog.setOnAlertConfirmListener(() -> {
+                                back();
+                                finish();
+                            });
+                            dialog.show(getSupportFragmentManager());
                         }
                         break;
                     case CHAR_RESET:
                         if (responseType == OrderTask.RESPONSE_TYPE_WRITE) {
-                            ToastUtils.showToast(DeviceInfoActivity.this, "Success!");
+                            mIsReset = true;
+                            AlertMessageDialog dialog = new AlertMessageDialog();
+                            dialog.setMessage("Reset success!\nPlease reconnect the Device.");
+                            dialog.setConfirm(R.string.ok);
+                            dialog.setOnAlertConfirmListener(() -> {
+                                back();
+                                finish();
+                            });
+                            dialog.show(getSupportFragmentManager());
                         }
                         break;
                     case CHAR_PARAMS:

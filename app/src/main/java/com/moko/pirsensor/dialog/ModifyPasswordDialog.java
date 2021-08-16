@@ -117,6 +117,10 @@ public class ModifyPasswordDialog extends MokoBaseDialog {
                     ToastUtils.showToast(getContext(), "Password do not match! Please try again.");
                     return;
                 }
+                if (newPassword.length() != 8) {
+                    ToastUtils.showToast(getContext(), "Password must be 8 characters.");
+                    return;
+                }
                 if (modifyPasswordClickListener != null)
                     modifyPasswordClickListener.onEnsureClicked(etNewPassword.getText().toString());
                 break;

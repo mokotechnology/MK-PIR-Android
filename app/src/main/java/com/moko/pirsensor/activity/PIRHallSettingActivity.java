@@ -93,7 +93,7 @@ public class PIRHallSettingActivity extends BaseActivity {
                     case CHAR_HALL_STATUS:
                         int doorStatus = value[0] & 0xFF;
                         int pirStatus = value[1] & 0xFF;
-                        tvDoorStatus.setText(doorStatus == 1 ? "Open" : "Close");
+                        tvDoorStatus.setText(doorStatus == 1 ? "Open" : "Closed");
                         tvPirStatus.setText(pirStatus == 1 ? "Motion detected" : "Motion not detected");
                         break;
                 }
@@ -125,15 +125,14 @@ public class PIRHallSettingActivity extends BaseActivity {
                                     }
                                     break;
                                 case GET_PIR_DELAY:
-                                    if (responseType == OrderTask.RESPONSE_TYPE_WRITE) {
-                                        if (length > 0) {
-                                            int delay = value[4] & 0xFF;
-                                            npvPirDelay.setValue(delay);
-                                        }
+                                    if (length > 0) {
+                                        int delay = value[4] & 0xFF;
+                                        npvPirDelay.setValue(delay);
                                     }
-                                    if (responseType == OrderTask.RESPONSE_TYPE_WRITE) {
+                                    break;
+                                case SET_PIR_DELAY:
+                                    if (length > 0 && 0xAA == (value[4] & 0xFF))
                                         ToastUtils.showToast(PIRHallSettingActivity.this, "Success!");
-                                    }
                                     break;
                                 case GET_TIME:
                                     if (length >= 6) {
