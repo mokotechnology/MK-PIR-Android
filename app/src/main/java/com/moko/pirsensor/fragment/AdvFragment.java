@@ -28,7 +28,7 @@ import butterknife.ButterKnife;
 public class AdvFragment extends Fragment implements SeekBar.OnSeekBarChangeListener {
 
     private static final String TAG = "AdvFragment";
-    private final String FILTER_ASCII = "[^ -~]";
+    private final String FILTER_ASCII = "[ -~]*";
 
     @BindView(R.id.et_major)
     EditText etMajor;
@@ -76,7 +76,7 @@ public class AdvFragment extends Fragment implements SeekBar.OnSeekBarChangeList
         sbRSSI.setOnSeekBarChangeListener(this);
         sbTxPower.setOnSeekBarChangeListener(this);
         InputFilter inputFilter = (source, start, end, dest, dstart, dend) -> {
-            if ((source + "").matches(FILTER_ASCII)) {
+            if (!(source + "").matches(FILTER_ASCII)) {
                 return "";
             }
 

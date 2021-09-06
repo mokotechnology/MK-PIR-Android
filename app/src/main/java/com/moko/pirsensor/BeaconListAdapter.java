@@ -30,7 +30,7 @@ public class BeaconListAdapter extends BaseQuickAdapter<BeaconInfo, BaseViewHold
             sensitivity = "High";
         }
         helper.setText(R.id.tv_sensitivity, sensitivity);
-        helper.setText(R.id.tv_door_status, item.doorState == 0 ? "Close" : "Open");
+        helper.setText(R.id.tv_door_status, item.doorState == 0 ? "Closed" : "Open");
         String delay = "Low";
         if (item.pirDelay == 1) {
             delay = "Medium";

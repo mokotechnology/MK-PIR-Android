@@ -21,7 +21,7 @@ public class PasswordDialog extends MokoBaseDialog {
 
     @BindView(R.id.et_password)
     EditText etPassword;
-    private final String FILTER_ASCII = "[^ -~]";
+    private final String FILTER_ASCII = "[ -~]*";
 
     private String password;
 
@@ -36,7 +36,7 @@ public class PasswordDialog extends MokoBaseDialog {
         InputFilter filter = new InputFilter() {
             @Override
             public CharSequence filter(CharSequence source, int start, int end, Spanned dest, int dstart, int dend) {
-                if ((source + "").matches(FILTER_ASCII)) {
+                if (!(source + "").matches(FILTER_ASCII)) {
                     return "";
                 }
 
