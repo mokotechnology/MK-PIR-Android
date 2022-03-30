@@ -85,32 +85,32 @@ public class DeviceFragment extends Fragment {
     }
 
     public void setManufacturer(byte[] value) {
-        String manufacturer = new String(value).replaceAll(" ", "");
+        String manufacturer = new String(value).trim();
         tvManufacturer.setText(manufacturer);
     }
 
     public void setDeviceModel(byte[] value) {
-        String deviceModel = new String(value).replaceAll(" ", "");
+        String deviceModel = new String(value).trim();
         tvDeviceModel.setText(deviceModel);
     }
 
     public void setProductDate(byte[] value) {
-        String productDate = new String(value).replaceAll(" ", "");
+        String productDate = new String(value).trim();
         tvProductDate.setText(productDate);
     }
 
     public void setHardwareVersion(byte[] value) {
-        String hardwareVersion = new String(value).replaceAll(" ", "");
+        String hardwareVersion = new String(value).trim();
         tvHardwareVersion.setText(hardwareVersion);
     }
 
     public void setFirmwareVersion(byte[] value) {
-        String firmwareVersion = new String(value).replaceAll(" ", "");
+        String firmwareVersion = new String(value).trim();
         tvFirmwareVersion.setText(firmwareVersion);
     }
 
     public void setSoftwareVersion(byte[] value) {
-        String softwareVersion = new String(value).replaceAll(" ", "");
+        String softwareVersion = new String(value).trim();
         tvSoftwareVersion.setText(softwareVersion);
     }
 
@@ -128,7 +128,7 @@ public class DeviceFragment extends Fragment {
         seconds -= hours * 60 * 60;
         minutes = seconds / 60;
         seconds -= minutes * 60;
-        tvRunningTime.setText(String.format("%dD%dh%dm%ds", day, hours, minutes, seconds));
+        tvRunningTime.setText(String.format("%dD%dH%dM%dS", day, hours, minutes, seconds));
     }
 
     public void setChipModel(byte[] value) {
