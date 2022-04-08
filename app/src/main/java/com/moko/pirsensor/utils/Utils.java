@@ -9,6 +9,8 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
 
+import com.moko.pirsensor.BaseApplication;
+
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -25,7 +27,7 @@ public class Utils {
         String devicePath;
         if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
             // 优先保存到SD卡中
-            devicePath = Environment.getExternalStorageDirectory().getAbsolutePath() + File.separator + "PIRMotionSensor" + File.separator + fileName;
+            devicePath = BaseApplication.PATH_LOGCAT + File.separator + fileName;
         } else {
             // 如果SD卡不存在，就保存到本应用的目录下
             devicePath = context.getFilesDir().getAbsolutePath() + File.separator + "PIRMotionSensor" + File.separator + fileName;
@@ -57,22 +59,24 @@ public class Utils {
         Intent intent;
         if (files.length == 1) {
             intent = new Intent(Intent.ACTION_SEND);
-            Uri uri;
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                uri = FileProvider.getUriForFile(context, "com.moko.pirsensor.fileprovider", files[0]);
-                intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                Uri fileUri = IOUtils.insertDownloadFile(context, files[0]);
+                intent.putExtra(Intent.EXTRA_STREAM, fileUri);
             } else {
-                uri = Uri.fromFile(files[0]);
+                intent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(files[0]));
             }
-            intent.putExtra(Intent.EXTRA_STREAM, uri);
             intent.putExtra(Intent.EXTRA_TEXT, body);
         } else {
-            intent = new Intent(Intent.ACTION_SEND_MULTIPLE);
             ArrayList<Uri> uris = new ArrayList<>();
             for (int i = 0; i < files.length; i++) {
-                Uri uri = Uri.fromFile(files[i]);
-                uris.add(uri);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                    Uri fileUri = IOUtils.insertDownloadFile(context, files[i]);
+                    uris.add(fileUri);
+                } else {
+                    uris.add(Uri.fromFile(files[i]));
+                }
             }
+            intent = new Intent(Intent.ACTION_SEND_MULTIPLE);
             intent.putParcelableArrayListExtra(Intent.EXTRA_STREAM, uris);
             ArrayList<CharSequence> charSequences = new ArrayList<>();
             charSequences.add(body);
