@@ -36,6 +36,7 @@ import com.moko.pirsensor.dialog.ScanFilterDialog;
 import com.moko.pirsensor.entity.BeaconInfo;
 import com.moko.pirsensor.utils.BeaconInfoParseableImpl;
 import com.moko.pirsensor.utils.ToastUtils;
+import com.moko.pirsensor.utils.Utils;
 import com.moko.support.MokoBleScanner;
 import com.moko.support.MokoSupport;
 import com.moko.support.OrderTaskAssembler;
@@ -104,6 +105,19 @@ public class MainActivity extends BaseActivity implements MokoScanDeviceCallback
 
         mHandler = new Handler(Looper.getMainLooper());
         mokoBleScanner = new MokoBleScanner(this);
+        StringBuffer buffer = new StringBuffer();
+        // 记录机型
+        buffer.append("机型：");
+        buffer.append(android.os.Build.MODEL);
+        buffer.append("=====");
+        // 记录版本号
+        buffer.append("手机系统版本：");
+        buffer.append(android.os.Build.VERSION.RELEASE);
+        buffer.append("=====");
+        // 记录APP版本
+        buffer.append("APP版本：");
+        buffer.append(Utils.getVersionInfo(this));
+        XLog.d(buffer.toString());
         EventBus.getDefault().register(this);
         // 注册广播接收器
         IntentFilter filter = new IntentFilter();

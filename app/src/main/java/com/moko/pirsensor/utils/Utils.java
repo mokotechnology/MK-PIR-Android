@@ -9,6 +9,8 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
 
+import com.moko.pirsensor.BaseApplication;
+
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -25,7 +27,7 @@ public class Utils {
         String devicePath;
         if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
             // 优先保存到SD卡中
-            devicePath = Environment.getExternalStorageDirectory().getAbsolutePath() + File.separator + "PIRMotionSensor" + File.separator + fileName;
+            devicePath = BaseApplication.PATH_LOGCAT + File.separator + fileName;
         } else {
             // 如果SD卡不存在，就保存到本应用的目录下
             devicePath = context.getFilesDir().getAbsolutePath() + File.separator + "PIRMotionSensor" + File.separator + fileName;
