@@ -8,11 +8,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
+import com.moko.ble.lib.utils.MokoUtils;
 import com.moko.pirsensor.R;
 import com.moko.pirsensor.activity.DeviceInfoActivity;
 import com.moko.pirsensor.dialog.AlertMessageDialog;
 import com.moko.pirsensor.dialog.ModifyPasswordDialog;
-import com.moko.ble.lib.utils.MokoUtils;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;

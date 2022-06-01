@@ -8,8 +8,8 @@ android {
         applicationId "com.moko.pirsensor"
         minSdkVersion 18
         targetSdkVersion 30
-        versionCode 4
-        versionName "1.0.3"
+        versionCode 7
+        versionName "1.0.6"
     }
 
     buildTypes {
@@ -28,9 +28,9 @@ android {
             def outputFile = output.outputFile
             if (outputFile != null && outputFile.name.endsWith('.apk')) {
                 def formatedDate = new Date().format("yyyyMMddHHmm")
-                def apkFileName = "PIRMotionSensor_${defaultConfig.versionName}_${formatedDate}.apk"
+                def apkFileName = "MKPIR_${defaultConfig.versionName}_${formatedDate}.apk"
                 if (outputFile.name.contains('debug')) {
-                    apkFileName = "PIRMotionSensor_${defaultConfig.versionName}_${formatedDate}_debug.apk"
+                    apkFileName = "MKPIR_${defaultConfig.versionName}_${formatedDate}_debug.apk"
                 }
                 outputFileName = apkFileName
             }

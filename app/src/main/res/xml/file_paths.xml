@@ -1,4 +1,4 @@
 <paths>
-    <external-path name="log" path="PIRMotionSensor/"/>
+    <external-path name="log" path="MKPIR/"/>
     <external-path name="*" path="."/>
 </paths>

@@ -1,7 +1,6 @@
 package com.moko.pirsensor.entity;
 
 import java.io.Serializable;
-import java.util.HashMap;
 
 public class BeaconInfo implements Serializable {
 

@@ -43,15 +43,15 @@ public class AboutActivity extends BaseActivity {
                 startActivity(intent);
                 break;
             case R.id.tv_feedback_log:
-                File trackerLog = new File(BaseApplication.PATH_LOGCAT + File.separator + "PIRMotionSensor.txt");
-                File trackerLogBak = new File(BaseApplication.PATH_LOGCAT + File.separator + "PIRMotionSensor.txt.bak");
+                File trackerLog = new File(BaseApplication.PATH_LOGCAT + File.separator + "MKPIR.txt");
+                File trackerLogBak = new File(BaseApplication.PATH_LOGCAT + File.separator + "MKPIR.txt.bak");
                 File trackerCrashLog = new File(BaseApplication.PATH_LOGCAT + File.separator + "crash_log.txt");
                 if (!trackerLog.exists() || !trackerLog.canRead()) {
                     ToastUtils.showToast(this, "File is not exists!");
                     return;
                 }
                 String address = "Development@mokotechnology.com";
-                StringBuilder mailContent = new StringBuilder("PIRMotionSensor_");
+                StringBuilder mailContent = new StringBuilder("MKPIR_");
                 Calendar calendar = Calendar.getInstance();
                 String date = Utils.calendar2strDate(calendar, "yyyyMMdd");
                 mailContent.append(date);

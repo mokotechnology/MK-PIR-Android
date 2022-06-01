@@ -15,8 +15,8 @@ import android.util.TypedValue;
 import android.view.MotionEvent;
 import android.view.View;
 
-import com.moko.pirsensor.R;
 import com.moko.ble.lib.utils.MokoUtils;
+import com.moko.pirsensor.R;
 
 import java.util.ArrayList;
 import java.util.List;

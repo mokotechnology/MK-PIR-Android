@@ -1,4 +1,4 @@
-# PIRMotionSensor Android SDK Guide（English）
+# MKPIR Android SDK Guide（English）
 
 ## Intro
 
@@ -29,7 +29,7 @@ Scanning callback interface,this interface can be used to obtain the scan status
 
 Parsed data interface,this interface can parsed the device broadcast frame, get the specific data. the implementation can refer to `BeaconXInfoParseableImpl` in the project,the `DeviceInfo` will be parsed to `BeaconXInfo`.
 
-**`com.moko.PIRMotionSensor.utils.BeaconXParser`**
+**`com.moko.pirsensor.utils.BeaconXParser`**
 
 Parsed data utils class, use this class to convert `BeaconXInfo.ValidData` to UID, URL, TLM, IBeacon, T&H, 3-Axis.
 

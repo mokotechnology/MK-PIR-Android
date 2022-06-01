@@ -14,8 +14,8 @@ import com.elvishew.xlog.printer.AndroidPrinter;
 import com.elvishew.xlog.printer.Printer;
 import com.elvishew.xlog.printer.file.FilePrinter;
 import com.elvishew.xlog.printer.file.naming.ChangelessFileNameGenerator;
-import com.moko.pirsensor.utils.IOUtils;
 import com.moko.ble.lib.log.ClearLogBackStrategy;
+import com.moko.pirsensor.utils.IOUtils;
 import com.moko.support.MokoSupport;
 
 import java.io.File;
@@ -25,9 +25,9 @@ import java.io.Writer;
 
 public class BaseApplication extends Application {
 
-    private static final String TAG = "PIRMotionSensor";
-    private static final String LOG_FILE = "PIRMotionSensor.txt";
-    private static final String LOG_FOLDER = "PIRMotionSensor";
+    private static final String TAG = "MKPIR";
+    private static final String LOG_FILE = "MKPIR.txt";
+    private static final String LOG_FOLDER = "MKPIR";
     public static String PATH_LOGCAT;
 
     @Override
