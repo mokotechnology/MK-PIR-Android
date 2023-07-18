@@ -282,7 +282,7 @@
                 android:layout_alignParentRight="true"
                 android:layout_marginTop="15dp"
                 android:gravity="right"
-                android:text="0dbm"
+                android:text="-100dbm"
                 android:textColor="@color/grey_666666"
                 android:textSize="15sp"
                 android:textStyle="bold" />
@@ -330,7 +330,7 @@
                 android:layout_alignParentRight="true"
                 android:layout_marginTop="15dp"
                 android:gravity="right"
-                android:text="0dBm"
+                android:text="-40dBm"
                 android:textColor="@color/grey_666666"
                 android:textSize="15sp"
                 android:textStyle="bold" />

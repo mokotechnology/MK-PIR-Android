@@ -18,6 +18,8 @@
             android:gravity="center_vertical"
             android:paddingLeft="16dp"
             android:text=""
+            android:clickable="true"
+            android:onClick="onBack"
             android:textColor="@color/white_ffffff"
             android:textSize="15sp" />
 

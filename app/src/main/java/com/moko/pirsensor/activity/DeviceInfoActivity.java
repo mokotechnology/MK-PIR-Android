@@ -14,10 +14,7 @@ import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.Window;
-import android.widget.ImageView;
-import android.widget.RadioButton;
 import android.widget.RadioGroup;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.elvishew.xlog.XLog;
@@ -29,8 +26,10 @@ import com.moko.ble.lib.task.OrderTaskResponse;
 import com.moko.ble.lib.utils.MokoUtils;
 import com.moko.pirsensor.AppConstants;
 import com.moko.pirsensor.R;
+import com.moko.pirsensor.databinding.ActivityDeviceInfoBinding;
 import com.moko.pirsensor.dialog.AlertMessageDialog;
 import com.moko.pirsensor.dialog.LoadingMessageDialog;
+import com.moko.pirsensor.dialog.ModifyPasswordDialog;
 import com.moko.pirsensor.fragment.AdvFragment;
 import com.moko.pirsensor.fragment.DeviceFragment;
 import com.moko.pirsensor.fragment.SettingFragment;
@@ -52,28 +51,14 @@ import java.util.Arrays;
 
 import androidx.annotation.IdRes;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import butterknife.OnClick;
 import no.nordicsemi.android.dfu.DfuProgressListener;
 import no.nordicsemi.android.dfu.DfuProgressListenerAdapter;
 import no.nordicsemi.android.dfu.DfuServiceInitiator;
 import no.nordicsemi.android.dfu.DfuServiceListenerHelper;
 
-public class DeviceInfoActivity extends BaseActivity implements RadioGroup.OnCheckedChangeListener {
+public class DeviceInfoActivity extends BaseActivity<ActivityDeviceInfoBinding> implements RadioGroup.OnCheckedChangeListener {
     public static final int REQUEST_CODE_SELECT_FIRMWARE = 0x10;
-    @BindView(R.id.rg_options)
-    RadioGroup rgOptions;
-    @BindView(R.id.tv_title)
-    TextView tvTitle;
-    @BindView(R.id.iv_save)
-    ImageView ivSave;
-    @BindView(R.id.radioBtn_adv)
-    RadioButton radioBtnAdv;
-    @BindView(R.id.radioBtn_setting)
-    RadioButton radioBtnSetting;
-    @BindView(R.id.radioBtn_device)
-    RadioButton radioBtnDevice;
+
     private FragmentManager fragmentManager;
     private AdvFragment advFragment;
     private SettingFragment settingFragment;
@@ -89,12 +74,10 @@ public class DeviceInfoActivity extends BaseActivity implements RadioGroup.OnChe
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_device_info);
-        ButterKnife.bind(this);
         mPassword = getIntent().getStringExtra(AppConstants.EXTRA_KEY_PASSWORD);
         fragmentManager = getFragmentManager();
         initFragment();
-        rgOptions.setOnCheckedChangeListener(this);
+        mBind.rgOptions.setOnCheckedChangeListener(this);
         EventBus.getDefault().register(this);
         // 注册广播接收器
         IntentFilter filter = new IntentFilter();
@@ -109,6 +92,11 @@ public class DeviceInfoActivity extends BaseActivity implements RadioGroup.OnChe
         }
     }
 
+    @Override
+    protected ActivityDeviceInfoBinding getViewBinding() {
+        return ActivityDeviceInfoBinding.inflate(getLayoutInflater());
+    }
+
     @Subscribe(threadMode = ThreadMode.POSTING, priority = 100)
     public void onConnectStatusEvent(ConnectStatusEvent event) {
         EventBus.getDefault().cancelEventDelivery(event);
@@ -120,7 +108,7 @@ public class DeviceInfoActivity extends BaseActivity implements RadioGroup.OnChe
                     return;
                 if (MokoSupport.getInstance().isBluetoothOpen()) {
                     if (isUpgrading) {
-                        tvTitle.postDelayed(() -> {
+                        mBind.tvTitle.postDelayed(() -> {
                             dismissDFUProgressDialog();
                         }, 2000);
                     } else {
@@ -208,6 +196,7 @@ public class DeviceInfoActivity extends BaseActivity implements RadioGroup.OnChe
                     case CHAR_CONNECTION:
                         if (responseType == OrderTask.RESPONSE_TYPE_READ) {
                             if (value.length > 0) {
+                                isConnected = MokoUtils.toInt(value) == 0;
                                 settingFragment.setConnectable(value);
                             }
                         }
@@ -274,8 +263,8 @@ public class DeviceInfoActivity extends BaseActivity implements RadioGroup.OnChe
                                     break;
                                 case GET_BUTTON_POWER:
                                     if (length >= 1) {
-                                        boolean enable = value[4] == 1;
-                                        settingFragment.setButtonPower(enable);
+                                        enableButtonPower = value[4] == 1;
+                                        settingFragment.setButtonPower(enableButtonPower);
                                     }
                                     break;
                                 case SET_BUTTON_POWER:
@@ -449,13 +438,8 @@ public class DeviceInfoActivity extends BaseActivity implements RadioGroup.OnChe
             mLoadingMessageDialog.dismissAllowingStateLoss();
     }
 
-    @OnClick({R.id.tv_back})
-    public void onViewClicked(View view) {
-        switch (view.getId()) {
-            case R.id.tv_back:
-                back();
-                break;
-        }
+    public void onBack(View view) {
+        back();
     }
 
     private void back() {
@@ -484,7 +468,7 @@ public class DeviceInfoActivity extends BaseActivity implements RadioGroup.OnChe
     }
 
     private void showAdvFragment() {
-        ivSave.setVisibility(View.VISIBLE);
+        mBind.ivSave.setVisibility(View.VISIBLE);
         if (advFragment != null) {
             fragmentManager.beginTransaction()
                     .hide(settingFragment)
@@ -492,11 +476,11 @@ public class DeviceInfoActivity extends BaseActivity implements RadioGroup.OnChe
                     .show(advFragment)
                     .commit();
         }
-        tvTitle.setText(getString(R.string.advertisement_title));
+        mBind.tvTitle.setText(getString(R.string.advertisement_title));
     }
 
     private void showSettingFragment() {
-        ivSave.setVisibility(View.GONE);
+        mBind.ivSave.setVisibility(View.GONE);
         if (settingFragment != null) {
             fragmentManager.beginTransaction()
                     .hide(advFragment)
@@ -504,11 +488,11 @@ public class DeviceInfoActivity extends BaseActivity implements RadioGroup.OnChe
                     .show(settingFragment)
                     .commit();
         }
-        tvTitle.setText(getString(R.string.setting_title));
+        mBind.tvTitle.setText(getString(R.string.setting_title));
     }
 
     private void showDeviceFragment() {
-        ivSave.setVisibility(View.GONE);
+        mBind.ivSave.setVisibility(View.GONE);
         if (deviceFragment != null) {
             fragmentManager.beginTransaction()
                     .hide(advFragment)
@@ -516,7 +500,7 @@ public class DeviceInfoActivity extends BaseActivity implements RadioGroup.OnChe
                     .show(deviceFragment)
                     .commit();
         }
-        tvTitle.setText(getString(R.string.device_title));
+        mBind.tvTitle.setText(getString(R.string.device_title));
     }
 
     @Override
@@ -538,50 +522,115 @@ public class DeviceInfoActivity extends BaseActivity implements RadioGroup.OnChe
     }
 
 
-    public void modifyPassword(String password) {
+    public void onModifyPassword(View view) {
         if (isWindowLocked())
             return;
-        showSyncingProgressDialog();
-        MokoSupport.getInstance().sendOrder(OrderTaskAssembler.setPassword(password));
+        final ModifyPasswordDialog modifyPasswordDialog = new ModifyPasswordDialog();
+        modifyPasswordDialog.setOnModifyPasswordClicked(new ModifyPasswordDialog.ModifyPasswordClickListener() {
+            @Override
+            public void onEnsureClicked(String password) {
+                showSyncingProgressDialog();
+                MokoSupport.getInstance().sendOrder(OrderTaskAssembler.setPassword(password));
+            }
+
+            @Override
+            public void onPasswordNotMatch() {
+                AlertMessageDialog dialog = new AlertMessageDialog();
+                dialog.setMessage("Password do not match!\nPlease try again.");
+                dialog.setConfirm(R.string.ok);
+                dialog.setCancelGone();
+                dialog.show(getSupportFragmentManager());
+            }
+        });
+        modifyPasswordDialog.show(getSupportFragmentManager());
     }
 
-    public void resetDevice() {
+    public void onResetDevice(View view) {
         if (isWindowLocked())
             return;
-        showSyncingProgressDialog();
-        MokoSupport.getInstance().sendOrder(OrderTaskAssembler.resetDevice(mPassword));
+        final AlertMessageDialog resetDeviceDialog = new AlertMessageDialog();
+        resetDeviceDialog.setMessage("Are you sure to reset the device？");
+        resetDeviceDialog.setConfirm(R.string.ok);
+        resetDeviceDialog.setOnAlertConfirmListener(() -> {
+            showSyncingProgressDialog();
+            MokoSupport.getInstance().sendOrder(OrderTaskAssembler.resetDevice(mPassword));
+        });
+        resetDeviceDialog.show(getSupportFragmentManager());
+
     }
 
+    boolean isConnected;
 
-    public void setConnectable(boolean isConneacted) {
-        if (isWindowLocked())
-            return;
-        showSyncingProgressDialog();
-        ArrayList<OrderTask> orderTasks = new ArrayList<>();
-        orderTasks.add(OrderTaskAssembler.setConnectable(isConneacted));
-        orderTasks.add(OrderTaskAssembler.getConnectable());
-        MokoSupport.getInstance().sendOrder(orderTasks.toArray(new OrderTask[]{}));
+    public void onSetConnectable(View view) {
+        if (isWindowLocked()) return;
+        if (isConnected) {
+            final AlertMessageDialog connectAlertDialog = new AlertMessageDialog();
+            connectAlertDialog.setMessage("Are you sure to set the device non-connectable？");
+            connectAlertDialog.setConfirm(R.string.ok);
+            connectAlertDialog.setOnAlertConfirmListener(() -> {
+                showSyncingProgressDialog();
+                ArrayList<OrderTask> orderTasks = new ArrayList<>();
+                orderTasks.add(OrderTaskAssembler.setConnectable(false));
+                orderTasks.add(OrderTaskAssembler.getConnectable());
+                MokoSupport.getInstance().sendOrder(orderTasks.toArray(new OrderTask[]{}));
+            });
+            connectAlertDialog.show(getSupportFragmentManager());
+        } else {
+            showSyncingProgressDialog();
+            ArrayList<OrderTask> orderTasks = new ArrayList<>();
+            orderTasks.add(OrderTaskAssembler.setConnectable(true));
+            orderTasks.add(OrderTaskAssembler.getConnectable());
+            MokoSupport.getInstance().sendOrder(orderTasks.toArray(new OrderTask[]{}));
+        }
     }
 
-    public void setButtonPower(boolean enable) {
-        if (isWindowLocked())
-            return;
-        showSyncingProgressDialog();
-        ArrayList<OrderTask> orderTasks = new ArrayList<>();
-        orderTasks.add(OrderTaskAssembler.setButtonPower(enable ? 1 : 0));
-        orderTasks.add(OrderTaskAssembler.getButtonPower());
-        MokoSupport.getInstance().sendOrder(orderTasks.toArray(new OrderTask[]{}));
+    private boolean enableButtonPower;
+
+    public void onSetButtonPower(View view) {
+        if (isWindowLocked()) return;
+        if (enableButtonPower) {
+            final AlertMessageDialog buttonPowerAlertDialog = new AlertMessageDialog();
+            buttonPowerAlertDialog.setMessage("If disable Button Power OFF, then it  cannot power off beacon by press button operation.");
+            buttonPowerAlertDialog.setConfirm(R.string.ok);
+            buttonPowerAlertDialog.setOnAlertConfirmListener(new AlertMessageDialog.OnAlertConfirmListener() {
+                @Override
+                public void onClick() {
+                    showSyncingProgressDialog();
+                    ArrayList<OrderTask> orderTasks = new ArrayList<>();
+                    orderTasks.add(OrderTaskAssembler.setButtonPower(0));
+                    orderTasks.add(OrderTaskAssembler.getButtonPower());
+                    MokoSupport.getInstance().sendOrder(orderTasks.toArray(new OrderTask[]{}));
+                }
+            });
+            buttonPowerAlertDialog.show(getSupportFragmentManager());
+        } else {
+            showSyncingProgressDialog();
+            ArrayList<OrderTask> orderTasks = new ArrayList<>();
+            orderTasks.add(OrderTaskAssembler.setButtonPower(1));
+            orderTasks.add(OrderTaskAssembler.getButtonPower());
+            MokoSupport.getInstance().sendOrder(orderTasks.toArray(new OrderTask[]{}));
+        }
+
     }
 
-    public void setClose() {
-        if (isWindowLocked())
-            return;
-        mIsClose = true;
-        showSyncingProgressDialog();
-        MokoSupport.getInstance().sendOrder(OrderTaskAssembler.setClose());
+    public void onSetClose(View view) {
+        if (isWindowLocked()) return;
+        final AlertMessageDialog powerAlertDialog = new AlertMessageDialog();
+        powerAlertDialog.setMessage("Are you sure to turn off the device?Please make sure the device has a button to turn on!");
+        powerAlertDialog.setConfirm(R.string.ok);
+        powerAlertDialog.setOnAlertConfirmListener(new AlertMessageDialog.OnAlertConfirmListener() {
+            @Override
+            public void onClick() {
+                mIsClose = true;
+                showSyncingProgressDialog();
+                MokoSupport.getInstance().sendOrder(OrderTaskAssembler.setClose());
+            }
+        });
+        powerAlertDialog.show(getSupportFragmentManager());
+
     }
 
-    public void onPIRHallSetting() {
+    public void onPIRHallSetting(View view) {
         if (isWindowLocked())
             return;
         startActivity(new Intent(this, PIRHallSettingActivity.class));
@@ -591,7 +640,7 @@ public class DeviceInfoActivity extends BaseActivity implements RadioGroup.OnChe
     public void onSave(View view) {
         if (isWindowLocked())
             return;
-        if (radioBtnAdv.isChecked()) {
+        if (mBind.radioBtnAdv.isChecked()) {
             if (advFragment.isValid()) {
                 advFragment.saveParams();
             } else {
@@ -603,7 +652,7 @@ public class DeviceInfoActivity extends BaseActivity implements RadioGroup.OnChe
     ///////////////////////////////////////////////////////////////////////////
     // DFU
     ///////////////////////////////////////////////////////////////////////////
-    public void chooseFirmwareFile() {
+    public void onChooseFirmwareFile(View view) {
         Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
         intent.setType("*/*");//设置类型，我这里是任意类型，任意后缀的可以这样写。
         intent.addCategory(Intent.CATEGORY_OPENABLE);

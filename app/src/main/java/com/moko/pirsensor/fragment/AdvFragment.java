@@ -8,47 +8,23 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.EditText;
 import android.widget.SeekBar;
-import android.widget.TextView;
 
 import com.moko.ble.lib.task.OrderTask;
 import com.moko.ble.lib.utils.MokoUtils;
 import com.moko.pirsensor.R;
 import com.moko.pirsensor.activity.DeviceInfoActivity;
+import com.moko.pirsensor.databinding.FragmentAdvBinding;
 import com.moko.support.MokoSupport;
 import com.moko.support.OrderTaskAssembler;
 import com.moko.support.entity.TxPowerEnum;
 
 import java.util.ArrayList;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
-
 public class AdvFragment extends Fragment implements SeekBar.OnSeekBarChangeListener {
-
+    private FragmentAdvBinding mBind;
     private static final String TAG = "AdvFragment";
     private final String FILTER_ASCII = "[ -~]*";
-
-    @BindView(R.id.et_major)
-    EditText etMajor;
-    @BindView(R.id.et_minor)
-    EditText etMinor;
-    @BindView(R.id.et_device_name)
-    EditText etDeviceName;
-    @BindView(R.id.et_serial_id)
-    EditText etSerialId;
-    @BindView(R.id.et_adv_interval)
-    EditText etAdvInterval;
-    @BindView(R.id.sb_rssi)
-    SeekBar sbRSSI;
-    @BindView(R.id.tv_rssi)
-    TextView tvRSSI;
-    @BindView(R.id.sb_tx_power)
-    SeekBar sbTxPower;
-    @BindView(R.id.tv_tx_power)
-    TextView tvTxPower;
-
 
     private DeviceInfoActivity activity;
 
@@ -70,11 +46,10 @@ public class AdvFragment extends Fragment implements SeekBar.OnSeekBarChangeList
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         Log.i(TAG, "onCreateView: ");
-        View view = inflater.inflate(R.layout.fragment_adv, container, false);
-        ButterKnife.bind(this, view);
+        mBind = FragmentAdvBinding.inflate(inflater, container, false);
         activity = (DeviceInfoActivity) getActivity();
-        sbRSSI.setOnSeekBarChangeListener(this);
-        sbTxPower.setOnSeekBarChangeListener(this);
+        mBind.sbRssi.setOnSeekBarChangeListener(this);
+        mBind.sbTxPower.setOnSeekBarChangeListener(this);
         InputFilter inputFilter = (source, start, end, dest, dstart, dend) -> {
             if (!(source + "").matches(FILTER_ASCII)) {
                 return "";
@@ -82,8 +57,8 @@ public class AdvFragment extends Fragment implements SeekBar.OnSeekBarChangeList
 
             return null;
         };
-        etDeviceName.setFilters(new InputFilter[]{new InputFilter.LengthFilter(10), inputFilter});
-        return view;
+        mBind.etDeviceName.setFilters(new InputFilter[]{new InputFilter.LengthFilter(10), inputFilter});
+        return mBind.getRoot();
     }
 
     @Override
@@ -114,12 +89,12 @@ public class AdvFragment extends Fragment implements SeekBar.OnSeekBarChangeList
         switch (viewId) {
             case R.id.sb_rssi:
                 int rssi = progress - 100;
-                tvRSSI.setText(String.format("%ddBm", rssi));
+                mBind.tvRssi.setText(String.format("%ddBm", rssi));
                 break;
             case R.id.sb_tx_power:
                 TxPowerEnum txPowerEnum = TxPowerEnum.fromOrdinal(progress);
                 int txPower = txPowerEnum.getTxPower();
-                tvTxPower.setText(String.format("%ddBm", txPower));
+                mBind.tvTxPower.setText(String.format("%ddBm", txPower));
                 break;
         }
     }
@@ -135,42 +110,42 @@ public class AdvFragment extends Fragment implements SeekBar.OnSeekBarChangeList
     }
 
     public void setMajor(int major) {
-        etMajor.setText(String.valueOf(major));
+        mBind.etMajor.setText(String.valueOf(major));
     }
 
     public void setMinor(int minor) {
-        etMinor.setText(String.valueOf(minor));
+        mBind.etMinor.setText(String.valueOf(minor));
     }
 
     public void setRssi(int rssi) {
         int progress = 100 + rssi;
-        sbRSSI.setProgress(progress);
+        mBind.sbRssi.setProgress(progress);
     }
 
     public void setTxPower(int txPower) {
         int grade = 7 - txPower;
-        sbTxPower.setProgress(grade);
+        mBind.sbTxPower.setProgress(grade);
     }
 
 
     public void setAdvInterval(int interval) {
-        etAdvInterval.setText(String.valueOf(interval));
+        mBind.etAdvInterval.setText(String.valueOf(interval));
     }
 
     public void setAdvName(String advName) {
-        etDeviceName.setText(advName);
+        mBind.etDeviceName.setText(advName);
     }
 
     public void setSerialID(String serialID) {
-        etSerialId.setText(serialID);
+        mBind.etSerialId.setText(serialID);
     }
 
     public boolean isValid() {
-        final String majorStr = etMajor.getText().toString();
-        final String minorStr = etMinor.getText().toString();
-        final String advIntervalStr = etAdvInterval.getText().toString();
-        final String deviceNameStr = etDeviceName.getText().toString();
-        final String serialIdStr = etSerialId.getText().toString();
+        final String majorStr = mBind.etMajor.getText().toString();
+        final String minorStr = mBind.etMinor.getText().toString();
+        final String advIntervalStr = mBind.etAdvInterval.getText().toString();
+        final String deviceNameStr = mBind.etDeviceName.getText().toString();
+        final String serialIdStr = mBind.etSerialId.getText().toString();
         if (TextUtils.isEmpty(majorStr))
             return false;
         if (TextUtils.isEmpty(minorStr))
@@ -196,17 +171,17 @@ public class AdvFragment extends Fragment implements SeekBar.OnSeekBarChangeList
     }
 
     public void saveParams() {
-        final String majorStr = etMajor.getText().toString();
-        final String minorStr = etMinor.getText().toString();
-        final String advIntervalStr = etAdvInterval.getText().toString();
-        final String deviceNameStr = etDeviceName.getText().toString();
-        final String serialIdStr = etSerialId.getText().toString();
+        final String majorStr = mBind.etMajor.getText().toString();
+        final String minorStr = mBind.etMinor.getText().toString();
+        final String advIntervalStr = mBind.etAdvInterval.getText().toString();
+        final String deviceNameStr = mBind.etDeviceName.getText().toString();
+        final String serialIdStr = mBind.etSerialId.getText().toString();
         final int major = Integer.parseInt(majorStr);
         final int minor = Integer.parseInt(minorStr);
         final int advInterval = Integer.parseInt(advIntervalStr);
-        final int rssi = sbRSSI.getProgress();
+        final int rssi = mBind.sbRssi.getProgress();
         byte[] rssiBytes = MokoUtils.toByteArray(Math.abs(rssi - 100), 1);
-        final int txPower = sbTxPower.getProgress();
+        final int txPower = mBind.sbTxPower.getProgress();
         byte[] txPowerBytes = MokoUtils.toByteArray(7 - txPower, 1);
         activity.showSyncingProgressDialog();
         ArrayList<OrderTask> orderTasks = new ArrayList<>();

@@ -2,53 +2,33 @@ package com.moko.pirsensor.dialog;
 
 import android.content.Context;
 import android.text.TextUtils;
-import android.view.View;
-import android.widget.EditText;
 import android.widget.SeekBar;
-import android.widget.TextView;
 
-import com.moko.pirsensor.R;
+import com.moko.pirsensor.databinding.DialogScanFilterBinding;
 
-import butterknife.BindView;
-import butterknife.OnClick;
 
-/**
- * @Date 2018/1/18
- * @Author wenzheng.liu
- * @Description 扫描筛选对话框
- * @ClassPath com.moko.beaconx.dialog.ScanFilterDialog
- */
-public class ScanFilterDialog extends BaseDialog {
-    @BindView(R.id.et_filter_name)
-    EditText etFilterName;
-    @BindView(R.id.et_filter_mac)
-    EditText etFilterMac;
-    @BindView(R.id.tv_rssi)
-    TextView tvRssi;
-    @BindView(R.id.sb_rssi)
-    SeekBar sbRssi;
-
+public class ScanFilterDialog extends BaseDialog<DialogScanFilterBinding> {
     private int filterRssi;
     private String filterName;
     private String filterMac;
+
+    @Override
+    protected DialogScanFilterBinding getViewBind() {
+        return DialogScanFilterBinding.inflate(getLayoutInflater());
+    }
 
     public ScanFilterDialog(Context context) {
         super(context);
     }
 
     @Override
-    protected int getLayoutResId() {
-        return R.layout.dialog_scan_filter;
-    }
-
-    @Override
-    protected void renderConvertView(View convertView, Object o) {
-        tvRssi.setText(String.format("%sdBm", filterRssi + ""));
-        sbRssi.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+    protected void onCreate() {
+        mBind.tvRssi.setText(String.format("%sdBm", filterRssi + ""));
+        mBind.sbRssi.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 int rssi = (progress * -1);
-                tvRssi.setText(String.format("%sdBm", rssi + ""));
+                mBind.tvRssi.setText(String.format("%sdBm", rssi + ""));
                 filterRssi = rssi;
             }
 
@@ -62,32 +42,22 @@ public class ScanFilterDialog extends BaseDialog {
 
             }
         });
-        sbRssi.setProgress(Math.abs(filterRssi));
+        mBind.sbRssi.setProgress(Math.abs(filterRssi));
         if (!TextUtils.isEmpty(filterName)) {
-            etFilterName.setText(filterName);
-            etFilterName.setSelection(filterName.length());
+            mBind.etFilterName.setText(filterName);
+            mBind.etFilterName.setSelection(filterName.length());
         }
         if (!TextUtils.isEmpty(filterMac)) {
-            etFilterMac.setText(filterMac);
-            etFilterMac.setSelection(filterMac.length());
+            mBind.etFilterMac.setText(filterMac);
+            mBind.etFilterMac.setSelection(filterMac.length());
         }
         setDismissEnable(true);
-    }
-
-    @OnClick({R.id.iv_filter_name_delete, R.id.iv_filter_mac_delete, R.id.tv_done})
-    public void onViewClicked(View view) {
-        switch (view.getId()) {
-            case R.id.iv_filter_name_delete:
-                etFilterName.setText("");
-                break;
-            case R.id.iv_filter_mac_delete:
-                etFilterMac.setText("");
-                break;
-            case R.id.tv_done:
-                listener.onDone(etFilterName.getText().toString(), etFilterMac.getText().toString(), filterRssi);
-                dismiss();
-                break;
-        }
+        mBind.ivFilterNameDelete.setOnClickListener(v -> mBind.etFilterName.setText(""));
+        mBind.ivFilterMacDelete.setOnClickListener(v -> mBind.etFilterMac.setText(""));
+        mBind.tvDone.setOnClickListener(v -> {
+            listener.onDone(mBind.etFilterName.getText().toString(), mBind.etFilterMac.getText().toString(), filterRssi);
+            dismiss();
+        });
     }
 
     private OnScanFilterListener listener;

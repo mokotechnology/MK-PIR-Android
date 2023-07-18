@@ -13,9 +13,6 @@ import android.text.TextUtils;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
-import android.widget.ImageView;
-import android.widget.RelativeLayout;
-import android.widget.TextView;
 
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.elvishew.xlog.XLog;
@@ -28,6 +25,7 @@ import com.moko.ble.lib.utils.MokoUtils;
 import com.moko.pirsensor.AppConstants;
 import com.moko.pirsensor.BeaconListAdapter;
 import com.moko.pirsensor.R;
+import com.moko.pirsensor.databinding.ActivityMainBinding;
 import com.moko.pirsensor.dialog.AlertMessageDialog;
 import com.moko.pirsensor.dialog.LoadingDialog;
 import com.moko.pirsensor.dialog.LoadingMessageDialog;
@@ -57,26 +55,11 @@ import java.util.concurrent.ConcurrentHashMap;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import butterknife.OnClick;
 
 
-public class MainActivity extends BaseActivity implements MokoScanDeviceCallback, BaseQuickAdapter.OnItemChildClickListener {
+public class MainActivity extends BaseActivity<ActivityMainBinding> implements MokoScanDeviceCallback, BaseQuickAdapter.OnItemChildClickListener {
 
-    @BindView(R.id.iv_refresh)
-    ImageView ivRefresh;
-    @BindView(R.id.rv_devices)
-    RecyclerView rvDevices;
-    @BindView(R.id.tv_device_num)
-    TextView tvDeviceNum;
-    @BindView(R.id.rl_edit_filter)
-    RelativeLayout rl_edit_filter;
-    @BindView(R.id.rl_filter)
-    RelativeLayout rl_filter;
-    @BindView(R.id.tv_filter)
-    TextView tv_filter;
+
     private boolean mReceiverTag = false;
     private ConcurrentHashMap<String, BeaconInfo> beaconInfoHashMap;
     private ArrayList<BeaconInfo> beaconInfos;
@@ -89,19 +72,17 @@ public class MainActivity extends BaseActivity implements MokoScanDeviceCallback
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-        ButterKnife.bind(this);
         beaconInfoHashMap = new ConcurrentHashMap<>();
         beaconInfos = new ArrayList<>();
         adapter = new BeaconListAdapter();
         adapter.replaceData(beaconInfos);
         adapter.setOnItemChildClickListener(this);
         adapter.openLoadAnimation();
-        rvDevices.setLayoutManager(new LinearLayoutManager(this));
+        mBind.rvDevices.setLayoutManager(new LinearLayoutManager(this));
         DividerItemDecoration itemDecoration = new DividerItemDecoration(this, DividerItemDecoration.VERTICAL);
         itemDecoration.setDrawable(ContextCompat.getDrawable(this, R.drawable.shape_recycleview_divider));
-        rvDevices.addItemDecoration(itemDecoration);
-        rvDevices.setAdapter(adapter);
+        mBind.rvDevices.addItemDecoration(itemDecoration);
+        mBind.rvDevices.setAdapter(adapter);
 
         mHandler = new Handler(Looper.getMainLooper());
         mokoBleScanner = new MokoBleScanner(this);
@@ -132,6 +113,11 @@ public class MainActivity extends BaseActivity implements MokoScanDeviceCallback
                 startScan();
             }
         }
+    }
+
+    @Override
+    protected ActivityMainBinding getViewBinding() {
+        return ActivityMainBinding.inflate(getLayoutInflater());
     }
 
     private BroadcastReceiver mReceiver = new BroadcastReceiver() {
@@ -185,7 +171,7 @@ public class MainActivity extends BaseActivity implements MokoScanDeviceCallback
             // 设备连接成功，通知页面更新
             dismissLoadingProgressDialog();
             showLoadingMessageDialog();
-            ivRefresh.postDelayed(new Runnable() {
+            mBind.ivRefresh.postDelayed(new Runnable() {
                 @Override
                 public void run() {
                     ArrayList<OrderTask> orderTasks = new ArrayList<>();
@@ -211,7 +197,7 @@ public class MainActivity extends BaseActivity implements MokoScanDeviceCallback
             switch (orderCHAR) {
                 case CHAR_PASSWORD:
                     if (0 == (MokoUtils.toInt(value))) {
-                        ivRefresh.postDelayed(() -> {
+                        mBind.ivRefresh.postDelayed(() -> {
                             dismissLoadingProgressDialog();
                             dismissLoadingMessageDialog();
                             mSavedPassword = mPassword;
@@ -271,7 +257,7 @@ public class MainActivity extends BaseActivity implements MokoScanDeviceCallback
                         @Override
                         public void run() {
                             adapter.replaceData(beaconInfos);
-                            tvDeviceNum.setText(String.format("DEVICE(%d)", beaconInfos.size()));
+                            mBind.tvDeviceNum.setText(String.format("DEVICE(%d)", beaconInfos.size()));
                         }
                     });
                     try {
@@ -297,7 +283,7 @@ public class MainActivity extends BaseActivity implements MokoScanDeviceCallback
 
     @Override
     public void onStopScan() {
-        findViewById(R.id.iv_refresh).clearAnimation();
+        mBind.ivRefresh.clearAnimation();
         animation = null;
     }
 
@@ -353,110 +339,112 @@ public class MainActivity extends BaseActivity implements MokoScanDeviceCallback
     public String filterMac;
     public int filterRssi = -100;
 
-    @OnClick({R.id.iv_refresh, R.id.iv_about, R.id.rl_edit_filter, R.id.rl_filter, R.id.iv_filter_delete})
-    public void onViewClicked(View view) {
-        switch (view.getId()) {
-            case R.id.iv_refresh:
-                if (isWindowLocked())
-                    return;
-                if (!MokoSupport.getInstance().isBluetoothOpen()) {
-                    // 蓝牙未打开，开启蓝牙
-                    MokoSupport.getInstance().enableBluetooth();
-                    return;
+
+    public void onAbout(View view) {
+        if (isWindowLocked())
+            return;
+        startActivity(new Intent(this, AboutActivity.class));
+    }
+
+    public void onFilter(View view) {
+        if (isWindowLocked())
+            return;
+        if (animation != null) {
+            mHandler.removeMessages(0);
+            mokoBleScanner.stopScanDevice();
+        }
+        ScanFilterDialog scanFilterDialog = new ScanFilterDialog(this);
+        scanFilterDialog.setFilterName(filterName);
+        scanFilterDialog.setFilterMac(filterMac);
+        scanFilterDialog.setFilterRssi(filterRssi);
+        scanFilterDialog.setOnScanFilterListener((filterName, filterMac, filterRssi) -> {
+            this.filterName = filterName;
+            this.filterMac = filterMac;
+            String showFilterMac = "";
+            if (filterMac.length() == 12) {
+                StringBuffer stringBuffer = new StringBuffer(filterMac);
+                stringBuffer.insert(2, ":");
+                stringBuffer.insert(5, ":");
+                stringBuffer.insert(8, ":");
+                stringBuffer.insert(11, ":");
+                stringBuffer.insert(14, ":");
+                showFilterMac = stringBuffer.toString();
+            } else {
+                showFilterMac = filterMac;
+            }
+            this.filterRssi = filterRssi;
+            if (!TextUtils.isEmpty(filterName)
+                    || !TextUtils.isEmpty(showFilterMac)
+                    || filterRssi != -100) {
+                mBind.rlFilter.setVisibility(View.VISIBLE);
+                mBind.rlEditFilter.setVisibility(View.GONE);
+                StringBuilder stringBuilder = new StringBuilder();
+                if (!TextUtils.isEmpty(filterName)) {
+                    stringBuilder.append(filterName);
+                    stringBuilder.append(";");
                 }
-                if (animation == null) {
-                    startScan();
-                } else {
-                    mHandler.removeMessages(0);
-                    mokoBleScanner.stopScanDevice();
+                if (!TextUtils.isEmpty(showFilterMac)) {
+                    stringBuilder.append(showFilterMac);
+                    stringBuilder.append(";");
                 }
-                break;
-            case R.id.iv_about:
-                startActivity(new Intent(this, AboutActivity.class));
-                break;
-            case R.id.rl_edit_filter:
-            case R.id.rl_filter:
-                if (animation != null) {
-                    mHandler.removeMessages(0);
-                    mokoBleScanner.stopScanDevice();
+                if (filterRssi != -100) {
+                    stringBuilder.append(String.format("%sdBm", filterRssi + ""));
+                    stringBuilder.append(";");
                 }
-                ScanFilterDialog scanFilterDialog = new ScanFilterDialog(this);
-                scanFilterDialog.setFilterName(filterName);
-                scanFilterDialog.setFilterMac(filterMac);
-                scanFilterDialog.setFilterRssi(filterRssi);
-                scanFilterDialog.setOnScanFilterListener((filterName, filterMac, filterRssi) -> {
-                    MainActivity.this.filterName = filterName;
-                    MainActivity.this.filterMac = filterMac;
-                    String showFilterMac = "";
-                    if (filterMac.length() == 12) {
-                        StringBuffer stringBuffer = new StringBuffer(filterMac);
-                        stringBuffer.insert(2, ":");
-                        stringBuffer.insert(5, ":");
-                        stringBuffer.insert(8, ":");
-                        stringBuffer.insert(11, ":");
-                        stringBuffer.insert(14, ":");
-                        showFilterMac = stringBuffer.toString();
-                    } else {
-                        showFilterMac = filterMac;
-                    }
-                    MainActivity.this.filterRssi = filterRssi;
-                    if (!TextUtils.isEmpty(filterName)
-                            || !TextUtils.isEmpty(showFilterMac)
-                            || filterRssi != -100) {
-                        rl_filter.setVisibility(View.VISIBLE);
-                        rl_edit_filter.setVisibility(View.GONE);
-                        StringBuilder stringBuilder = new StringBuilder();
-                        if (!TextUtils.isEmpty(filterName)) {
-                            stringBuilder.append(filterName);
-                            stringBuilder.append(";");
-                        }
-                        if (!TextUtils.isEmpty(showFilterMac)) {
-                            stringBuilder.append(showFilterMac);
-                            stringBuilder.append(";");
-                        }
-                        if (filterRssi != -100) {
-                            stringBuilder.append(String.format("%sdBm", filterRssi + ""));
-                            stringBuilder.append(";");
-                        }
-                        tv_filter.setText(stringBuilder.toString());
-                    } else {
-                        rl_filter.setVisibility(View.GONE);
-                        rl_edit_filter.setVisibility(View.VISIBLE);
-                    }
-                    if (isWindowLocked())
-                        return;
-                    if (animation == null) {
-                        startScan();
-                    }
-                });
-                scanFilterDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
-                    @Override
-                    public void onDismiss(DialogInterface dialog) {
-                        if (isWindowLocked())
-                            return;
-                        if (animation == null) {
-                            startScan();
-                        }
-                    }
-                });
-                scanFilterDialog.show();
-                break;
-            case R.id.iv_filter_delete:
-                if (animation != null) {
-                    mHandler.removeMessages(0);
-                    mokoBleScanner.stopScanDevice();
-                }
-                rl_filter.setVisibility(View.GONE);
-                rl_edit_filter.setVisibility(View.VISIBLE);
-                filterName = "";
-                filterMac = "";
-                filterRssi = -100;
+                mBind.tvFilter.setText(stringBuilder.toString());
+            } else {
+                mBind.rlFilter.setVisibility(View.GONE);
+                mBind.rlEditFilter.setVisibility(View.VISIBLE);
+            }
+            if (isWindowLocked())
+                return;
+            if (animation == null) {
+                startScan();
+            }
+        });
+        scanFilterDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
+            @Override
+            public void onDismiss(DialogInterface dialog) {
                 if (isWindowLocked())
                     return;
                 if (animation == null) {
                     startScan();
                 }
-                break;
+            }
+        });
+        scanFilterDialog.show();
+    }
+
+    public void onRefresh(View view) {
+        if (isWindowLocked())
+            return;
+        if (!MokoSupport.getInstance().isBluetoothOpen()) {
+            // 蓝牙未打开，开启蓝牙
+            MokoSupport.getInstance().enableBluetooth();
+            return;
+        }
+        if (animation == null) {
+            startScan();
+        } else {
+            mHandler.removeMessages(0);
+            mokoBleScanner.stopScanDevice();
+        }
+    }
+
+    public void onFilterDelete(View view) {
+        if (animation != null) {
+            mHandler.removeMessages(0);
+            mokoBleScanner.stopScanDevice();
+        }
+        mBind.rlFilter.setVisibility(View.GONE);
+        mBind.rlEditFilter.setVisibility(View.VISIBLE);
+        filterName = "";
+        filterMac = "";
+        filterRssi = -100;
+        if (isWindowLocked())
+            return;
+        if (animation == null) {
+            startScan();
         }
     }
 
@@ -508,6 +496,10 @@ public class MainActivity extends BaseActivity implements MokoScanDeviceCallback
 
     @Override
     public void onBackPressed() {
+        if (animation != null) {
+            mHandler.removeMessages(0);
+            mokoBleScanner.stopScanDevice();
+        }
         AlertMessageDialog dialog = new AlertMessageDialog();
         dialog.setMessage(R.string.main_exit_tips);
         dialog.setOnAlertConfirmListener(new AlertMessageDialog.OnAlertConfirmListener() {
@@ -551,7 +543,7 @@ public class MainActivity extends BaseActivity implements MokoScanDeviceCallback
                     XLog.i(password);
                     mPassword = password;
                     showLoadingProgressDialog();
-                    ivRefresh.postDelayed(new Runnable() {
+                    mBind.ivRefresh.postDelayed(new Runnable() {
                         @Override
                         public void run() {
                             MokoSupport.getInstance().connDevice(mSelectedBeaconXMac);

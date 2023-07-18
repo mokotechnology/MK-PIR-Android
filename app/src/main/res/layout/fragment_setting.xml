@@ -9,7 +9,9 @@
     <RelativeLayout
         android:id="@+id/rl_pir_hall"
         android:layout_width="match_parent"
-        android:layout_height="50dp">
+        android:layout_height="50dp"
+        android:clickable="true"
+        android:onClick="onPIRHallSetting">
 
         <TextView
             android:layout_width="wrap_content"
@@ -38,7 +40,9 @@
     <RelativeLayout
         android:id="@+id/rl_modify_password"
         android:layout_width="match_parent"
-        android:layout_height="50dp">
+        android:layout_height="50dp"
+        android:clickable="true"
+        android:onClick="onModifyPassword">
 
         <TextView
             android:layout_width="wrap_content"
@@ -67,7 +71,9 @@
     <RelativeLayout
         android:id="@+id/rl_reset_factory"
         android:layout_width="match_parent"
-        android:layout_height="50dp">
+        android:layout_height="50dp"
+        android:clickable="true"
+        android:onClick="onResetDevice">
 
         <TextView
             android:layout_width="wrap_content"
@@ -96,7 +102,9 @@
     <RelativeLayout
         android:id="@+id/rl_update_firmware"
         android:layout_width="match_parent"
-        android:layout_height="50dp">
+        android:layout_height="50dp"
+        android:clickable="true"
+        android:onClick="onChooseFirmwareFile">
 
         <TextView
             android:layout_width="wrap_content"
@@ -141,6 +149,8 @@
             android:layout_height="match_parent"
             android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
+            android:clickable="true"
+            android:onClick="onSetConnectable"
             android:src="@drawable/connectable_checked" />
 
         <View
@@ -166,6 +176,8 @@
             android:layout_height="match_parent"
             android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
+            android:clickable="true"
+            android:onClick="onSetClose"
             android:src="@drawable/connectable_checked" />
 
         <View
@@ -191,6 +203,8 @@
             android:layout_height="match_parent"
             android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
+            android:clickable="true"
+            android:onClick="onSetButtonPower"
             android:src="@drawable/connectable_checked" />
 
         <View
