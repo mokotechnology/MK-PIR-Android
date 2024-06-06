@@ -1,21 +1,40 @@
-apply plugin: 'com.android.application'
+if (!isLibrary.toBoolean()) {
+    apply plugin: 'com.android.application'
+} else {
+    apply plugin: 'com.android.library'
+}
 
 android {
-    compileSdkVersion 31
-    buildToolsVersion "29.0.3"
+    compileSdk 33
 
     defaultConfig {
-        applicationId "com.moko.pirsensor"
+        if (!isLibrary.toBoolean()) {
+            applicationId "com.moko.pirsensor"
+        }
+        namespace = "com.moko.pirsensor"
         minSdkVersion 18
-        targetSdkVersion 31
-        versionCode 8
-        versionName "1.0.7"
+        targetSdkVersion 33
+        versionCode 9
+        versionName "1.1.0"
         def formatDate = new Date().format("yyyyMMddHHmm")
         setProperty("archivesBaseName", "MKPIR_${versionName}_${formatDate}")
     }
 
     buildTypes {
         release {
+            if (!isLibrary.toBoolean()) {
+                buildConfigField("boolean", "IS_LIBRARY", "false")
+            } else {
+                buildConfigField("boolean", "IS_LIBRARY", "true")
+            }
+            minifyEnabled false
+        }
+        debug {
+            if (!isLibrary.toBoolean()) {
+                buildConfigField("boolean", "IS_LIBRARY", "false")
+            } else {
+                buildConfigField("boolean", "IS_LIBRARY", "true")
+            }
             minifyEnabled false
         }
     }
@@ -23,6 +42,16 @@ android {
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    sourceSets {
+        main {
+            if (!isLibrary.toBoolean()) {
+                manifest.srcFile 'src/main/AndroidManifest.xml'
+            } else {
+                manifest.srcFile 'src/main/module/AndroidManifest.xml'
+            }
+        }
     }
 
     viewBinding {
@@ -33,8 +62,27 @@ android {
         abortOnError false
     }
 
-    packagingOptions {
-        exclude 'META-INF/kotlinx_coroutines_core.version'
+    if (isLibrary.toBoolean()) {
+        libraryVariants.all { variant ->
+            if (variant.buildType.name == "release") {
+                // 修改aar名称
+                variant.outputs.all { output ->
+                    def formatDate = new Date().format("yyyyMMddHHmm")
+                    outputFileName = "MKPIR_${android.defaultConfig.versionName}_${formatDate}.aar"
+                }
+                // 复制aar到指定目录
+                variant.assemble.doLast {
+                    variant.outputs.all { output ->
+                        // 输出目录在：项目目录/build/outputs/aar/
+                        def outputPath = [project.rootDir.absolutePath, "build", "outputs", "aar"].join(File.separator)
+                        copy {
+                            from output.outputFile
+                            into outputPath
+                        }
+                    }
+                }
+            }
+        }
     }
 }
 
@@ -47,5 +95,15 @@ dependencies {
     implementation 'com.github.GrenderG:Toasty:1.4.1'
     implementation 'cn.carbswang.android:NumberPickerView:1.1.1'
     implementation 'com.guolindev.permissionx:permissionx:1.7.1'
-    implementation project(path: ':mokosupport')
+    if (!isLibrary.toBoolean()) {
+        implementation project(path: ':mokosupport')
+    } else {
+        implementation files('libs/mokoSupport.jar')
+        compileOnly files('libs/mokoBleLib.jar')
+        implementation 'no.nordicsemi.android.support.v18:scanner:1.6.0'
+        implementation 'org.greenrobot:eventbus:3.2.0'
+        implementation 'com.elvishew:xlog:1.6.1'
+        implementation 'no.nordicsemi.android:ble:2.5.1'
+        implementation 'androidx.appcompat:appcompat:1.0.0'
+    }
 }
