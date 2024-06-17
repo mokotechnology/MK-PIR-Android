@@ -10,10 +10,10 @@ import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 
 import com.moko.pirsensor.R;
-import com.moko.pirsensor.databinding.DialogPasswordBinding;
+import com.moko.pirsensor.databinding.DialogPasswordPirBinding;
 import com.moko.pirsensor.utils.ToastUtils;
 
-public class PasswordDialog extends MokoBaseDialog<DialogPasswordBinding> {
+public class PasswordDialog extends MokoBaseDialog<DialogPasswordPirBinding> {
     public static final String TAG = PasswordDialog.class.getSimpleName();
 
 
@@ -23,8 +23,8 @@ public class PasswordDialog extends MokoBaseDialog<DialogPasswordBinding> {
 
 
     @Override
-    protected DialogPasswordBinding getViewBind(LayoutInflater inflater, ViewGroup container) {
-        return DialogPasswordBinding.inflate(inflater, container, false);
+    protected DialogPasswordPirBinding getViewBind(LayoutInflater inflater, ViewGroup container) {
+        return DialogPasswordPirBinding.inflate(inflater, container, false);
     }
 
     @Override

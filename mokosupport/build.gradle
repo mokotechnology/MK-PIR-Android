@@ -4,7 +4,7 @@ android {
     compileSdk 33
 
     defaultConfig {
-        namespace = "com.moko.support.nano"
+        namespace = "com.moko.support.pir"
         minSdkVersion 18
         targetSdkVersion 33
         versionCode 4

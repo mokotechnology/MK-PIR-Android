@@ -5,8 +5,8 @@ import android.text.TextUtils;
 
 import com.moko.ble.lib.utils.MokoUtils;
 import com.moko.pirsensor.entity.BeaconInfo;
-import com.moko.support.entity.DeviceInfo;
-import com.moko.support.service.DeviceInfoParseable;
+import com.moko.support.pir.entity.DeviceInfo;
+import com.moko.support.pir.service.DeviceInfoParseable;
 
 import java.util.Arrays;
 import java.util.HashMap;

@@ -10,14 +10,13 @@ import com.moko.ble.lib.event.OrderTaskResponseEvent;
 import com.moko.ble.lib.task.OrderTask;
 import com.moko.ble.lib.task.OrderTaskResponse;
 import com.moko.pirsensor.AppConstants;
-import com.moko.pirsensor.R;
-import com.moko.pirsensor.databinding.ActivityPirHallBinding;
+import com.moko.pirsensor.databinding.ActivityPirHallPirBinding;
 import com.moko.pirsensor.dialog.LoadingMessageDialog;
 import com.moko.pirsensor.utils.ToastUtils;
-import com.moko.support.MokoSupport;
-import com.moko.support.OrderTaskAssembler;
-import com.moko.support.entity.OrderCHAR;
-import com.moko.support.entity.ParamsKeyEnum;
+import com.moko.support.pir.MokoSupport;
+import com.moko.support.pir.OrderTaskAssembler;
+import com.moko.support.pir.entity.OrderCHAR;
+import com.moko.support.pir.entity.ParamsKeyEnum;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -28,7 +27,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Locale;
 
-public class PIRHallSettingActivity extends BaseActivity<ActivityPirHallBinding> {
+public class PIRHallSettingActivity extends BaseActivity<ActivityPirHallPirBinding> {
 
 
     @Override
@@ -51,8 +50,8 @@ public class PIRHallSettingActivity extends BaseActivity<ActivityPirHallBinding>
     }
 
     @Override
-    protected ActivityPirHallBinding getViewBinding() {
-        return ActivityPirHallBinding.inflate(getLayoutInflater());
+    protected ActivityPirHallPirBinding getViewBinding() {
+        return ActivityPirHallPirBinding.inflate(getLayoutInflater());
     }
 
     @Subscribe(threadMode = ThreadMode.POSTING, priority = 200)

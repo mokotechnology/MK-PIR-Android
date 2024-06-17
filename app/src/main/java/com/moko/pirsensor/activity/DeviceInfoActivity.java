@@ -26,7 +26,7 @@ import com.moko.ble.lib.task.OrderTaskResponse;
 import com.moko.ble.lib.utils.MokoUtils;
 import com.moko.pirsensor.AppConstants;
 import com.moko.pirsensor.R;
-import com.moko.pirsensor.databinding.ActivityDeviceInfoBinding;
+import com.moko.pirsensor.databinding.ActivityDeviceInfoPirBinding;
 import com.moko.pirsensor.dialog.AlertMessageDialog;
 import com.moko.pirsensor.dialog.LoadingMessageDialog;
 import com.moko.pirsensor.dialog.ModifyPasswordDialog;
@@ -36,10 +36,10 @@ import com.moko.pirsensor.fragment.SettingFragment;
 import com.moko.pirsensor.service.DfuService;
 import com.moko.pirsensor.utils.FileUtils;
 import com.moko.pirsensor.utils.ToastUtils;
-import com.moko.support.MokoSupport;
-import com.moko.support.OrderTaskAssembler;
-import com.moko.support.entity.OrderCHAR;
-import com.moko.support.entity.ParamsKeyEnum;
+import com.moko.support.pir.MokoSupport;
+import com.moko.support.pir.OrderTaskAssembler;
+import com.moko.support.pir.entity.OrderCHAR;
+import com.moko.support.pir.entity.ParamsKeyEnum;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -56,7 +56,7 @@ import no.nordicsemi.android.dfu.DfuProgressListenerAdapter;
 import no.nordicsemi.android.dfu.DfuServiceInitiator;
 import no.nordicsemi.android.dfu.DfuServiceListenerHelper;
 
-public class DeviceInfoActivity extends BaseActivity<ActivityDeviceInfoBinding> implements RadioGroup.OnCheckedChangeListener {
+public class DeviceInfoActivity extends BaseActivity<ActivityDeviceInfoPirBinding> implements RadioGroup.OnCheckedChangeListener {
     public static final int REQUEST_CODE_SELECT_FIRMWARE = 0x10;
 
     private FragmentManager fragmentManager;
@@ -93,8 +93,8 @@ public class DeviceInfoActivity extends BaseActivity<ActivityDeviceInfoBinding> 
     }
 
     @Override
-    protected ActivityDeviceInfoBinding getViewBinding() {
-        return ActivityDeviceInfoBinding.inflate(getLayoutInflater());
+    protected ActivityDeviceInfoPirBinding getViewBinding() {
+        return ActivityDeviceInfoPirBinding.inflate(getLayoutInflater());
     }
 
     @Subscribe(threadMode = ThreadMode.POSTING, priority = 100)
@@ -505,19 +505,15 @@ public class DeviceInfoActivity extends BaseActivity<ActivityDeviceInfoBinding> 
 
     @Override
     public void onCheckedChanged(RadioGroup group, @IdRes int checkedId) {
-        switch (checkedId) {
-            case R.id.radioBtn_adv:
-                showAdvFragment();
-                getAdvInfo();
-                break;
-            case R.id.radioBtn_setting:
-                showSettingFragment();
-                getDeviceInfo();
-                break;
-            case R.id.radioBtn_device:
-                showDeviceFragment();
-                getSystemInfo();
-                break;
+        if (checkedId == R.id.radioBtn_adv) {
+            showAdvFragment();
+            getAdvInfo();
+        } else if (checkedId == R.id.radioBtn_setting) {
+            showSettingFragment();
+            getDeviceInfo();
+        } else if (checkedId == R.id.radioBtn_device) {
+            showDeviceFragment();
+            getSystemInfo();
         }
     }
 

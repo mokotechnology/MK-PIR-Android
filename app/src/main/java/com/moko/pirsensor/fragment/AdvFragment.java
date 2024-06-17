@@ -14,15 +14,15 @@ import com.moko.ble.lib.task.OrderTask;
 import com.moko.ble.lib.utils.MokoUtils;
 import com.moko.pirsensor.R;
 import com.moko.pirsensor.activity.DeviceInfoActivity;
-import com.moko.pirsensor.databinding.FragmentAdvBinding;
-import com.moko.support.MokoSupport;
-import com.moko.support.OrderTaskAssembler;
-import com.moko.support.entity.TxPowerEnum;
+import com.moko.pirsensor.databinding.FragmentAdvPirBinding;
+import com.moko.support.pir.MokoSupport;
+import com.moko.support.pir.OrderTaskAssembler;
+import com.moko.support.pir.entity.TxPowerEnum;
 
 import java.util.ArrayList;
 
 public class AdvFragment extends Fragment implements SeekBar.OnSeekBarChangeListener {
-    private FragmentAdvBinding mBind;
+    private FragmentAdvPirBinding mBind;
     private static final String TAG = "AdvFragment";
     private final String FILTER_ASCII = "[ -~]*";
 
@@ -46,7 +46,7 @@ public class AdvFragment extends Fragment implements SeekBar.OnSeekBarChangeList
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         Log.i(TAG, "onCreateView: ");
-        mBind = FragmentAdvBinding.inflate(inflater, container, false);
+        mBind = FragmentAdvPirBinding.inflate(inflater, container, false);
         activity = (DeviceInfoActivity) getActivity();
         mBind.sbRssi.setOnSeekBarChangeListener(this);
         mBind.sbTxPower.setOnSeekBarChangeListener(this);
@@ -86,16 +86,13 @@ public class AdvFragment extends Fragment implements SeekBar.OnSeekBarChangeList
 
 
     public void upgdateData(int viewId, int progress) {
-        switch (viewId) {
-            case R.id.sb_rssi:
-                int rssi = progress - 100;
-                mBind.tvRssi.setText(String.format("%ddBm", rssi));
-                break;
-            case R.id.sb_tx_power:
-                TxPowerEnum txPowerEnum = TxPowerEnum.fromOrdinal(progress);
-                int txPower = txPowerEnum.getTxPower();
-                mBind.tvTxPower.setText(String.format("%ddBm", txPower));
-                break;
+        if (viewId == R.id.sb_rssi) {
+            int rssi = progress - 100;
+            mBind.tvRssi.setText(String.format("%ddBm", rssi));
+        } else if (viewId == R.id.sb_tx_power) {
+            TxPowerEnum txPowerEnum = TxPowerEnum.fromOrdinal(progress);
+            int txPower = txPowerEnum.getTxPower();
+            mBind.tvTxPower.setText(String.format("%ddBm", txPower));
         }
     }
 

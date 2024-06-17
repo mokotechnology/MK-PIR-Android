@@ -11,9 +11,9 @@ import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 
 import com.moko.pirsensor.R;
-import com.moko.pirsensor.databinding.DialogChangePasswordBinding;
+import com.moko.pirsensor.databinding.DialogChangePasswordPirBinding;
 
-public class ModifyPasswordDialog extends MokoBaseDialog<DialogChangePasswordBinding> {
+public class ModifyPasswordDialog extends MokoBaseDialog<DialogChangePasswordPirBinding> {
     public static final String TAG = ModifyPasswordDialog.class.getSimpleName();
 
     private final String FILTER_ASCII = "[ -~]*";
@@ -23,8 +23,8 @@ public class ModifyPasswordDialog extends MokoBaseDialog<DialogChangePasswordBin
 
 
     @Override
-    protected DialogChangePasswordBinding getViewBind(LayoutInflater inflater, ViewGroup container) {
-        return DialogChangePasswordBinding.inflate(inflater, container, false);
+    protected DialogChangePasswordPirBinding getViewBind(LayoutInflater inflater, ViewGroup container) {
+        return DialogChangePasswordPirBinding.inflate(inflater, container, false);
     }
 
     @Override
