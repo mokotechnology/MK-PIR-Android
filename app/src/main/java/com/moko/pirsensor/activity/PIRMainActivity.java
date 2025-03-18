@@ -359,6 +359,11 @@ public class PIRMainActivity extends BaseActivity<ActivityMainPirBinding> implem
     public String filterMac;
     public int filterRssi = -100;
 
+    public void onBack(View view) {
+        if (isWindowLocked())
+            return;
+        back();
+    }
 
     public void onAbout(View view) {
         if (isWindowLocked())
@@ -516,19 +521,23 @@ public class PIRMainActivity extends BaseActivity<ActivityMainPirBinding> implem
 
     @Override
     public void onBackPressed() {
+
+        back();
+    }
+
+    private void back() {
         if (animation != null) {
             mHandler.removeMessages(0);
             mokoBleScanner.stopScanDevice();
         }
-        AlertMessageDialog dialog = new AlertMessageDialog();
-        dialog.setMessage(R.string.main_exit_tips);
-        dialog.setOnAlertConfirmListener(new AlertMessageDialog.OnAlertConfirmListener() {
-            @Override
-            public void onClick() {
-                PIRMainActivity.this.finish();
-            }
-        });
-        dialog.show(getSupportFragmentManager());
+        if (BuildConfig.IS_LIBRARY) {
+            finish();
+        } else {
+            AlertMessageDialog dialog = new AlertMessageDialog();
+            dialog.setMessage(R.string.main_exit_tips);
+            dialog.setOnAlertConfirmListener(() -> PIRMainActivity.this.finish());
+            dialog.show(getSupportFragmentManager());
+        }
     }
 
     private String mPassword;

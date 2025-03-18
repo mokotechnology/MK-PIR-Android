@@ -46,7 +46,7 @@
                 android:resource="@xml/file_paths" />
         </provider>
 
-        <service android:name="com.moko.pirsensor.service.DfuService" />
+        <service android:name="com.moko.pirsensor.service.DfuServicePir" />
 
     </application>
 

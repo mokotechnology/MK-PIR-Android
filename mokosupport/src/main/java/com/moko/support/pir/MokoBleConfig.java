@@ -23,6 +23,7 @@ final class MokoBleConfig extends MokoBleManager {
     private BluetoothGattCharacteristic doorStateCharacteristic;
     private BluetoothGattCharacteristic paramsCharacteristic;
     private BluetoothGattCharacteristic passwordCharacteristic;
+    private BluetoothGatt gatt;
 
     public MokoBleConfig(@NonNull Context context, MokoResponseCallback callback) {
         super(context);
@@ -30,17 +31,27 @@ final class MokoBleConfig extends MokoBleManager {
     }
 
     @Override
-    public boolean init(BluetoothGatt gatt) {
+    public boolean checkServiceCharacteristicSupported(BluetoothGatt gatt) {
         final BluetoothGattService service = gatt.getService(OrderServices.SERVICE_CUSTOM.getUuid());
         if (service != null) {
+            this.gatt = gatt;
+
             doorStateCharacteristic = service.getCharacteristic(OrderCHAR.CHAR_HALL_STATUS.getUuid());
             passwordCharacteristic = service.getCharacteristic(OrderCHAR.CHAR_PASSWORD.getUuid());
             paramsCharacteristic = service.getCharacteristic(OrderCHAR.CHAR_PARAMS.getUuid());
-            enablePasswordNotify();
-            enableParamsNotify();
-            return true;
+            return passwordCharacteristic != null
+                    && paramsCharacteristic != null;
         }
         return false;
+    }
+
+    @Override
+    public void init() {
+        requestMtu(247).with(((device, mtu) -> {
+        })).then((device -> {
+            enablePasswordNotify();
+            enableParamsNotify();
+        })).enqueue();
     }
 
     @Override
@@ -54,16 +65,9 @@ final class MokoBleConfig extends MokoBleManager {
     }
 
     @Override
-    public void discovered(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic) {
-        UUID lastCharacteristicUUID = characteristic.getUuid();
-        if (paramsCharacteristic.getUuid().equals(lastCharacteristicUUID))
-            mMokoResponseCallback.onServicesDiscovered(gatt);
-    }
-
-    @Override
     public void onDeviceConnecting(@NonNull BluetoothDevice device) {
-
     }
+
 
     @Override
     public void onDeviceConnected(@NonNull BluetoothDevice device) {
@@ -91,7 +95,7 @@ final class MokoBleConfig extends MokoBleManager {
     }
 
     public void enableDoorStateNotify() {
-        setIndicationCallback(doorStateCharacteristic).with((device, data) -> {
+        setNotificationCallback(doorStateCharacteristic).with((device, data) -> {
             final byte[] value = data.getValue();
             XLog.e("onDataReceived");
             XLog.e("device to app : " + MokoUtils.bytesToHexString(value));
@@ -105,13 +109,13 @@ final class MokoBleConfig extends MokoBleManager {
     }
 
     public void enableParamsNotify() {
-        setIndicationCallback(paramsCharacteristic).with((device, data) -> {
+        setNotificationCallback(paramsCharacteristic).with((device, data) -> {
             final byte[] value = data.getValue();
             XLog.e("onDataReceived");
             XLog.e("device to app : " + MokoUtils.bytesToHexString(value));
             mMokoResponseCallback.onCharacteristicChanged(paramsCharacteristic, value);
         });
-        enableNotifications(paramsCharacteristic).enqueue();
+        enableNotifications(paramsCharacteristic).done(device -> mMokoResponseCallback.onServicesDiscovered(gatt)).enqueue();
     }
 
     public void disableParamsNotify() {
@@ -119,7 +123,7 @@ final class MokoBleConfig extends MokoBleManager {
     }
 
     public void enablePasswordNotify() {
-        setIndicationCallback(passwordCharacteristic).with((device, data) -> {
+        setNotificationCallback(passwordCharacteristic).with((device, data) -> {
             final byte[] value = data.getValue();
             XLog.e("onDataReceived");
             XLog.e("device to app : " + MokoUtils.bytesToHexString(value));

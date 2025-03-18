@@ -8,11 +8,15 @@ import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Build;
 
+import com.moko.pirsensor.BuildConfig;
+
 import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Locale;
+
+import androidx.core.content.FileProvider;
 
 public class Utils {
 
@@ -28,27 +32,40 @@ public class Utils {
         Intent intent;
         if (files.length == 1) {
             intent = new Intent(Intent.ACTION_SEND);
+            Uri uri;
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                Uri fileUri = IOUtils.insertDownloadFile(context, files[0]);
-                intent.putExtra(Intent.EXTRA_STREAM, fileUri);
+                uri = IOUtils.insertDownloadFile(context, files[0]);
+            } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                if (BuildConfig.IS_LIBRARY) {
+                    uri = FileProvider.getUriForFile(context, "com.moko.beaconxpro.fileprovider", files[0]);
+                } else {
+                    uri = FileProvider.getUriForFile(context, "com.moko.pirsensor.fileprovider", files[0]);
+                }
+                intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
             } else {
-                intent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(files[0]));
+                uri = Uri.fromFile(files[0]);
             }
+            intent.putExtra(Intent.EXTRA_STREAM, uri);
             intent.putExtra(Intent.EXTRA_TEXT, body);
         } else {
             ArrayList<Uri> uris = new ArrayList<>();
-            for (int i = 0; i < files.length; i++) {
+            ArrayList<CharSequence> charSequences = new ArrayList<>();
+            for (File file : files) {
+                Uri fileUri;
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                    Uri fileUri = IOUtils.insertDownloadFile(context, files[i]);
-                    uris.add(fileUri);
+                    fileUri = IOUtils.insertDownloadFile(context, file);
                 } else {
-                    uris.add(Uri.fromFile(files[i]));
+                    if (BuildConfig.IS_LIBRARY) {
+                        fileUri = FileProvider.getUriForFile(context, "com.moko.beaconxpro.fileprovider", file);
+                    } else {
+                        fileUri = FileProvider.getUriForFile(context, "com.moko.pirsensor.fileprovider", file);
+                    }
                 }
+                uris.add(fileUri);
+                charSequences.add(body);
             }
             intent = new Intent(Intent.ACTION_SEND_MULTIPLE);
             intent.putParcelableArrayListExtra(Intent.EXTRA_STREAM, uris);
-            ArrayList<CharSequence> charSequences = new ArrayList<>();
-            charSequences.add(body);
             intent.putExtra(Intent.EXTRA_TEXT, charSequences);
         }
         String[] addresses = {address};

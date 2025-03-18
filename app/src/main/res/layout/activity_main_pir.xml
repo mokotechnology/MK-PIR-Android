@@ -11,15 +11,18 @@
         android:layout_height="55dp"
         android:background="@color/blue_2f84d0">
 
-        <ImageView
-            android:id="@+id/iv_refresh"
+        <TextView
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:clickable="true"
-            android:onClick="onRefresh"
+            android:drawableLeft="@drawable/back"
+            android:drawablePadding="6dp"
+            android:gravity="center_vertical"
+            android:onClick="onBack"
             android:paddingLeft="16dp"
-            android:paddingRight="16dp"
-            android:src="@drawable/refresh" />
+            android:text=""
+            android:textColor="@color/white_ffffff"
+            android:textSize="15sp" />
 
         <TextView
             android:id="@+id/tv_device_num"
@@ -53,7 +56,7 @@
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:layout_marginLeft="10dp"
-            android:layout_marginRight="10dp"
+            android:layout_marginRight="60dp"
             android:background="@drawable/shape_radius_white_bg"
             android:clickable="true"
             android:onClick="onFilter"
@@ -88,7 +91,7 @@
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:layout_marginLeft="10dp"
-            android:layout_marginRight="10dp"
+            android:layout_marginRight="60dp"
             android:background="@drawable/shape_radius_white_bg"
             android:clickable="true"
             android:onClick="onFilter"
@@ -120,6 +123,21 @@
                 android:src="@drawable/filter_delete" />
 
         </RelativeLayout>
+
+
+
+        <ImageView
+            android:id="@+id/iv_refresh"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:clickable="true"
+            android:onClick="onRefresh"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"
+            android:src="@drawable/refresh"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <androidx.recyclerview.widget.RecyclerView
