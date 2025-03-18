@@ -7,7 +7,7 @@ import android.view.View;
 
 import com.moko.pirsensor.BaseApplication;
 import com.moko.pirsensor.R;
-import com.moko.pirsensor.databinding.ActivityAboutBinding;
+import com.moko.pirsensor.databinding.ActivityAboutPirBinding;
 import com.moko.pirsensor.utils.ToastUtils;
 import com.moko.pirsensor.utils.Utils;
 
@@ -15,7 +15,7 @@ import java.io.File;
 import java.util.Calendar;
 
 
-public class AboutActivity extends BaseActivity<ActivityAboutBinding> {
+public class AboutActivity extends BaseActivity<ActivityAboutPirBinding> {
 
 
     @Override
@@ -25,8 +25,8 @@ public class AboutActivity extends BaseActivity<ActivityAboutBinding> {
     }
 
     @Override
-    protected ActivityAboutBinding getViewBinding() {
-        return ActivityAboutBinding.inflate(getLayoutInflater());
+    protected ActivityAboutPirBinding getViewBinding() {
+        return ActivityAboutPirBinding.inflate(getLayoutInflater());
     }
 
     public void onBack(View view) {

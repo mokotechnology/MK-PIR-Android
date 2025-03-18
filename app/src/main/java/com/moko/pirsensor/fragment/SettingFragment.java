@@ -10,13 +10,13 @@ import android.view.ViewGroup;
 import com.moko.ble.lib.utils.MokoUtils;
 import com.moko.pirsensor.R;
 import com.moko.pirsensor.activity.DeviceInfoActivity;
-import com.moko.pirsensor.databinding.FragmentSettingBinding;
+import com.moko.pirsensor.databinding.FragmentSettingPirBinding;
 
 public class SettingFragment extends Fragment {
 
     private static final String TAG = "SettingFragment";
 
-    private FragmentSettingBinding mBind;
+    private FragmentSettingPirBinding mBind;
     private DeviceInfoActivity activity;
 
     public SettingFragment() {
@@ -37,7 +37,7 @@ public class SettingFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         Log.i(TAG, "onCreateView: ");
-        mBind = FragmentSettingBinding.inflate(inflater, container, false);
+        mBind = FragmentSettingPirBinding.inflate(inflater, container, false);
         activity = (DeviceInfoActivity) getActivity();
         return mBind.getRoot();
     }

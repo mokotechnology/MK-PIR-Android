@@ -8,7 +8,7 @@ import com.moko.pirsensor.entity.BeaconInfo;
 
 public class BeaconListAdapter extends BaseQuickAdapter<BeaconInfo, BaseViewHolder> {
     public BeaconListAdapter() {
-        super(R.layout.list_item_device);
+        super(R.layout.list_item_device_pir);
     }
 
     @Override

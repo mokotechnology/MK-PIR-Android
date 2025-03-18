@@ -8,11 +8,11 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.moko.ble.lib.utils.MokoUtils;
-import com.moko.pirsensor.databinding.FragmentDeviceBinding;
+import com.moko.pirsensor.databinding.FragmentDevicePirBinding;
 
 public class DeviceFragment extends Fragment {
 
-    private FragmentDeviceBinding mBind;
+    private FragmentDevicePirBinding mBind;
     private static final String TAG = "DeviceFragment";
 
 
@@ -34,7 +34,7 @@ public class DeviceFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         Log.i(TAG, "onCreateView: ");
-        mBind = FragmentDeviceBinding.inflate(inflater, container, false);
+        mBind = FragmentDevicePirBinding.inflate(inflater, container, false);
         return mBind.getRoot();
     }
 
