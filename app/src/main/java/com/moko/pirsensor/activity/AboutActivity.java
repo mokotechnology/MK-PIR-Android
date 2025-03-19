@@ -5,7 +5,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 
-import com.moko.pirsensor.BaseApplication;
+import com.moko.pirsensor.BuildConfig;
 import com.moko.pirsensor.R;
 import com.moko.pirsensor.databinding.ActivityAboutPirBinding;
 import com.moko.pirsensor.utils.ToastUtils;
@@ -21,7 +21,10 @@ public class AboutActivity extends BaseActivity<ActivityAboutPirBinding> {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mBind.appVersion.setText(String.format("Version:%s", Utils.getVersionInfo(this)));
+        if (!BuildConfig.IS_LIBRARY) {
+            mBind.appVersion.setText(String.format("Version:%s", Utils.getVersionInfo(this)));
+            mBind.tvFeedbackLog.setVisibility(View.VISIBLE);
+        }
     }
 
     @Override
@@ -44,9 +47,9 @@ public class AboutActivity extends BaseActivity<ActivityAboutPirBinding> {
     public void onFeedback(View view) {
         if (isWindowLocked())
             return;
-        File trackerLog = new File(BaseApplication.PATH_LOGCAT + File.separator + "MKPIR.txt");
-        File trackerLogBak = new File(BaseApplication.PATH_LOGCAT + File.separator + "MKPIR.txt.bak");
-        File trackerCrashLog = new File(BaseApplication.PATH_LOGCAT + File.separator + "crash_log.txt");
+        File trackerLog = new File(PIRMainActivity.PATH_LOGCAT + File.separator + "MKPIR.txt");
+        File trackerLogBak = new File(PIRMainActivity.PATH_LOGCAT + File.separator + "MKPIR.txt.bak");
+        File trackerCrashLog = new File(PIRMainActivity.PATH_LOGCAT + File.separator + "crash_log.txt");
         if (!trackerLog.exists() || !trackerLog.canRead()) {
             ToastUtils.showToast(this, "File is not exists!");
             return;

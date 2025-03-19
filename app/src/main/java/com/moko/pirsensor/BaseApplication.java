@@ -27,7 +27,7 @@ public class BaseApplication extends Application {
     private static final String TAG = "MKPIR";
     private static final String LOG_FILE = "MKPIR.txt";
     private static final String LOG_FOLDER = "MKPIR";
-    public static String PATH_LOGCAT;
+    private static String PATH_LOGCAT;
 
     @Override
     public void onCreate() {
