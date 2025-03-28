@@ -38,10 +38,10 @@ import com.moko.pirsensor.utils.FileUtils;
 import com.moko.pirsensor.utils.ToastUtils;
 import com.moko.support.pir.MokoSupport;
 import com.moko.support.pir.OrderTaskAssembler;
-import com.moko.support.pir.dfu.DfuProgressListener;
-import com.moko.support.pir.dfu.DfuProgressListenerAdapter;
-import com.moko.support.pir.dfu.DfuServiceInitiator;
-import com.moko.support.pir.dfu.DfuServiceListenerHelper;
+import no.nordicsemi.android.dfu.DfuProgressListener;
+import no.nordicsemi.android.dfu.DfuProgressListenerAdapter;
+import no.nordicsemi.android.dfu.DfuServiceInitiator;
+import no.nordicsemi.android.dfu.DfuServiceListenerHelper;
 import com.moko.support.pir.entity.OrderCHAR;
 import com.moko.support.pir.entity.ParamsKeyEnum;
 

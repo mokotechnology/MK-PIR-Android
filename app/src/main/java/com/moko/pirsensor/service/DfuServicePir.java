@@ -23,7 +23,7 @@ package com.moko.pirsensor.service;
 
 import android.app.Activity;
 
-import com.moko.support.pir.dfu.DfuBaseService;
+import no.nordicsemi.android.dfu.DfuBaseService;
 
 
 public class DfuServicePir extends DfuBaseService {
