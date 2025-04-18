@@ -65,18 +65,18 @@ public class SettingFragment extends Fragment {
         int connectable = MokoUtils.toInt(value);
         boolean isConnected = connectable == 0;
         if (isConnected) {
-            mBind.ivConnectable.setImageResource(R.drawable.connectable_checked);
+            mBind.ivConnectable.setImageResource(R.drawable.ic_checked);
         } else {
-            mBind.ivConnectable.setImageResource(R.drawable.connectable_unchecked);
+            mBind.ivConnectable.setImageResource(R.drawable.ic_unchecked);
         }
     }
 
     public void setClose() {
-        mBind.ivPower.setImageResource(R.drawable.connectable_unchecked);
+        mBind.ivPower.setImageResource(R.drawable.ic_unchecked);
     }
 
 
     public void setButtonPower(boolean enable) {
-        mBind.ivButtonPower.setImageResource(enable ? R.drawable.connectable_checked : R.drawable.connectable_unchecked);
+        mBind.ivButtonPower.setImageResource(enable ? R.drawable.ic_checked : R.drawable.ic_unchecked);
     }
 }

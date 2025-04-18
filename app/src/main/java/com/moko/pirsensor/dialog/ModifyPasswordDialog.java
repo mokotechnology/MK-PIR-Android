@@ -10,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 
+import com.moko.lib.bxpui.dialog.MokoBaseDialog;
 import com.moko.pirsensor.R;
 import com.moko.pirsensor.databinding.DialogChangePasswordPirBinding;
 
@@ -39,8 +40,8 @@ public class ModifyPasswordDialog extends MokoBaseDialog<DialogChangePasswordPir
                 return null;
             }
         };
-        mBind.etNewPassword.setFilters(new InputFilter[]{new InputFilter.LengthFilter(16), filter});
-        mBind.etNewPasswordRe.setFilters(new InputFilter[]{new InputFilter.LengthFilter(16), filter});
+        mBind.etNewPassword.setFilters(new InputFilter[]{new InputFilter.LengthFilter(8), filter});
+        mBind.etNewPasswordRe.setFilters(new InputFilter[]{new InputFilter.LengthFilter(8), filter});
         mBind.etNewPassword.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {

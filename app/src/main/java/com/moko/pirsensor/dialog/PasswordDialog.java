@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 
+import com.moko.lib.bxpui.dialog.MokoBaseDialog;
 import com.moko.pirsensor.R;
 import com.moko.pirsensor.databinding.DialogPasswordPirBinding;
 import com.moko.pirsensor.utils.ToastUtils;
